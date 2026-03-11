@@ -1,0 +1,16 @@
+# Node / React / Electron
+node_modules/
+dist/
+out/
+release/
+.env
+
+# Python / FastAPI
+venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# OS Files
+.DS_Store
+Thumbs.db
