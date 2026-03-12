@@ -86,16 +86,22 @@ const TypingIndicator = (): ReactElement => (
    MAIN APP
 ───────────────────────────────────────────── */
 function App(): ReactElement {
-  /* ── Browser State ── */
-  const [tabs, setTabs] = useState<Tab[]>([
-    { id: '1', title: 'New Tab', url: 'https://www.google.com', isLoading: false }
-  ]);
-  const [activeTabId, setActiveTabId] = useState<string>('1');
+  /* ── Browser State (PERSISTED) ── */
+  const [tabs, setTabs] = useState<Tab[]>(() => {
+    const saved = localStorage.getItem('sparx_tabs');
+    return saved ? JSON.parse(saved) : [{ id: '1', title: 'New Tab', url: 'https://www.google.com', isLoading: false }];
+  });
+  const [activeTabId, setActiveTabId] = useState<string>(() => {
+    return localStorage.getItem('sparx_activeTab') || '1';
+  });
   const [inputUrl, setInputUrl] = useState<string>('https://www.google.com');
   const [isUrlFocused, setIsUrlFocused] = useState(false);
   const [canGoBack, setCanGoBack] = useState(false);
   const [canGoForward, setCanGoForward] = useState(false);
-  const [isDark, setIsDark] = useState(true);
+  const [isDark, setIsDark] = useState(() => {
+    const saved = localStorage.getItem('sparx_theme');
+    return saved !== null ? JSON.parse(saved) : true;
+  });
 
   /* ── UI State ── */
   const [isChatOpen, setIsChatOpen] = useState(true);
@@ -104,28 +110,37 @@ function App(): ReactElement {
   const [showCommandPalette, setShowCommandPalette] = useState(false);
   const [commandQuery, setCommandQuery] = useState('');
 
-  /* ── Chat State ── */
+  /* ── Chat State (PERSISTED) ── */
   const [currentMessage, setCurrentMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [uploadedPdfText, setUploadedPdfText] = useState('');
   const [pdfName, setPdfName] = useState('');
   const [isUploading, setIsUploading] = useState(false);
-  const [chatHistory, setChatHistory] = useState<ChatMessage[]>([
-    {
-      role: 'ai',
-      content: `## Welcome to Sparx ✦\n\nI'm your intelligent browsing companion. I can:\n\n- **Summarize** any page you're viewing\n- **Explain code** snippets step-by-step\n- **Answer questions** about uploaded PDFs\n- **Extract action items** from documents\n\nWhat would you like to explore?`,
-      timestamp: new Date()
-    }
-  ]);
+  const [chatHistory, setChatHistory] = useState<ChatMessage[]>(() => {
+    const saved = localStorage.getItem('sparx_chat');
+    return saved ? JSON.parse(saved) : [
+      {
+        role: 'ai',
+        content: `## Welcome to Sparx ✦\n\nI'm your intelligent browsing companion. I can:\n\n- **Summarize** any page you're viewing\n- **Explain code** snippets step-by-step\n- **Answer questions** about uploaded PDFs\n- **Extract action items** from documents\n\nWhat would you like to explore?`,
+        timestamp: new Date()
+      }
+    ];
+  });
 
-  /* ── Bookmarks / History ── */
-  const [bookmarks, setBookmarks] = useState<BookmarkItem[]>([
-    { title: 'Anthropic', url: 'https://anthropic.com' },
-    { title: 'GitHub', url: 'https://github.com' },
-  ]);
-  const [history] = useState<BookmarkItem[]>([
-    { title: 'Google', url: 'https://google.com' },
-  ]);
+  /* ── Bookmarks / History (PERSISTED) ── */
+  const [bookmarks, setBookmarks] = useState<BookmarkItem[]>(() => {
+    const saved = localStorage.getItem('sparx_bookmarks');
+    return saved ? JSON.parse(saved) : [
+      { title: 'Anthropic', url: 'https://anthropic.com' },
+      { title: 'GitHub', url: 'https://github.com' },
+    ];
+  });
+  const [history, setHistory] = useState<BookmarkItem[]>(() => {
+    const saved = localStorage.getItem('sparx_history');
+    return saved ? JSON.parse(saved) : [
+      { title: 'Google', url: 'https://google.com' },
+    ];
+  });
 
   /* ── Refs ── */
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -133,7 +148,23 @@ function App(): ReactElement {
   const urlInputRef = useRef<HTMLInputElement>(null);
   const chatInputRef = useRef<HTMLInputElement>(null);
 
-  /* ── Effects ── */
+  /* ── PERSISTENCE EFFECTS ── */
+  useEffect(() => { localStorage.setItem('sparx_tabs', JSON.stringify(tabs)); }, [tabs]);
+  useEffect(() => { localStorage.setItem('sparx_activeTab', activeTabId); }, [activeTabId]);
+  useEffect(() => { localStorage.setItem('sparx_theme', JSON.stringify(isDark)); }, [isDark]);
+  useEffect(() => { localStorage.setItem('sparx_chat', JSON.stringify(chatHistory)); }, [chatHistory]);
+  useEffect(() => { localStorage.setItem('sparx_bookmarks', JSON.stringify(bookmarks)); }, [bookmarks]);
+  useEffect(() => { localStorage.setItem('sparx_history', JSON.stringify(history)); }, [history]);
+
+  // Sync the URL bar with the active tab when the app first loads or tabs change
+  useEffect(() => {
+    const active = tabs.find(t => t.id === activeTabId);
+    if (active && !isUrlFocused) {
+      setInputUrl(active.url);
+    }
+  }, [activeTabId, tabs, isUrlFocused]);
+
+  /* ── Hotkey Effects ── */
   useEffect(() => {
     lastMessageRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
   }, [chatHistory, isTyping]);
@@ -240,6 +271,10 @@ function App(): ReactElement {
       url = 'https://' + url;
     }
     const title = (() => { try { return new URL(url).hostname.replace('www.', ''); } catch { return url.slice(0, 24); } })();
+    
+    // Add to history
+    setHistory(p => [{ title, url }, ...p].slice(0, 50)); // Keeps last 50 items
+
     setTabs(p => p.map(t => t.id === activeTabId ? { ...t, url, title, favicon: getFavicon(url) ?? undefined } : t));
     setInputUrl(url);
     urlInputRef.current?.blur();
@@ -248,7 +283,11 @@ function App(): ReactElement {
   const addBookmark = useCallback(() => {
     const active = tabs.find(t => t.id === activeTabId);
     if (!active) return;
-    setBookmarks(p => [...p, { title: active.title, url: active.url }]);
+    setBookmarks(p => {
+      // Prevent duplicates
+      if (p.some(b => b.url === active.url)) return p;
+      return [...p, { title: active.title, url: active.url }];
+    });
   }, [tabs, activeTabId]);
 
   /* ─────────── CHAT HANDLERS ─────────── */
@@ -383,7 +422,7 @@ function App(): ReactElement {
       `}</style>
 
       {/* ══════════════════════════════════════
-          TOP CHROME: TAB BAR
+         TOP CHROME: TAB BAR
       ══════════════════════════════════════ */}
       <div
         style={{ background: T.sidebarBg, borderBottom: `1px solid ${T.border}` }}
@@ -464,7 +503,7 @@ function App(): ReactElement {
       </div>
 
       {/* ══════════════════════════════════════
-          NAVIGATION BAR (URL Bar)
+         NAVIGATION BAR (URL Bar)
       ══════════════════════════════════════ */}
       <div
         style={{ background: T.surface, borderBottom: `1px solid ${T.border}` }}
@@ -581,7 +620,7 @@ function App(): ReactElement {
       </div>
 
       {/* ══════════════════════════════════════
-          MAIN CONTENT
+         MAIN CONTENT
       ══════════════════════════════════════ */}
       <div className="flex flex-1 overflow-hidden relative">
         {/* ── WEBVIEW AREA ── */}
@@ -591,7 +630,7 @@ function App(): ReactElement {
               key={tab.id}
               id={`webview-${tab.id}`}
               src={tab.url}
-              className="absolute inset-0 w-full h-full"
+              className="absolute inset-0 w-full h-full bg-white"
               style={{
                 display: activeTabId === tab.id ? 'flex' : 'none',
               }}
@@ -958,7 +997,7 @@ function App(): ReactElement {
       </div>
 
       {/* ══════════════════════════════════════
-          COMMAND PALETTE
+         COMMAND PALETTE
       ══════════════════════════════════════ */}
       <AnimatePresence>
         {showCommandPalette && (
