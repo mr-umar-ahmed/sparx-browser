@@ -119,3 +119,30 @@ async def clear_memory():
 @app.get("/")
 def read_root():
     return {"status": "Sparx AI Engine is online."}
+
+from pydantic import BaseModel
+import uuid
+
+# Define the data structure we will receive from React
+class MemoryPayload(BaseModel):
+    text: str
+    title: str
+    url: str
+
+@app.post("/api/memorize-page")
+async def memorize_page(payload: MemoryPayload):
+    try:
+        # NOTE: Make sure 'text_splitter' and 'collection' match the variable 
+        # names you used earlier in your main.py for the PDF extractor!
+        chunks = text_splitter.split_text(payload.text)
+        
+        if not chunks:
+            return {"error": "No text found to memorize"}
+            
+        metadatas = [{"title": payload.title, "url": payload.url, "type": "webpage"} for _ in chunks]
+        ids = [str(uuid.uuid4()) for _ in chunks]
+        
+        collection.add(documents=chunks, metadatas=metadatas, ids=ids)
+        return {"success": True, "chunks_added": len(chunks)}
+    except Exception as e:
+        return {"error": str(e)}
