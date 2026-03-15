@@ -1,4 +1,5 @@
-import { app, shell, BrowserWindow, ipcMain } from 'electron'
+// 1. ADD 'nativeTheme' TO THIS IMPORT
+import { app, shell, BrowserWindow, ipcMain, nativeTheme } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -40,6 +41,9 @@ function createWindow(): void {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
+  // 2. ADD THIS LINE TO FORCE LIGHT MODE EVERYWHERE
+  nativeTheme.themeSource = 'light'
+
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
 
