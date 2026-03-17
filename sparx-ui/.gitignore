@@ -1,11 +1,13 @@
 # Node
 node_modules/
+sparx-ui/node_modules/
 dist/
-dist-electron/
-out/
+sparx-ui/dist/
+sparx-ui/dist-electron/
+sparx-ui/out/
 .env
 
-# Python
+# Python / Backend
 sparx-ai-engine/venv/
 sparx-ai-engine/__pycache__/
 .pytest_cache/
