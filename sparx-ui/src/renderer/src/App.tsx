@@ -33,7 +33,7 @@ export default function App(): ReactElement {
   
   const { 
     tabs, activeTabId, inputUrl, setInputUrl, isUrlFocused, setIsUrlFocused, 
-    canGoBack, canGoForward, bookmarks, setBookmarks, history, setHistory, 
+     bookmarks, setBookmarks, history, setHistory, 
     notes, setNotes, 
     isPrivacyMode, setIsPrivacyMode,
     handleAddTab, handleCloseTab, handleSwitchTab, handleNavigate, addBookmark 
@@ -316,12 +316,12 @@ export default function App(): ReactElement {
               {tab.url === 'sparx://newtab' ? (
                 <ScrollMorphHero onNavigate={handleNavigate} T={T} isPrivacyMode={isPrivacyMode} />
               ) : (
-                <webview 
-                  id={`webview-${tab.id}`} 
-                  src={tab.url} 
-                  className="w-full h-full bg-white" 
-                  allowpopups="true" 
-                />
+               <webview 
+  id={`webview-${tab.id}`} 
+  src={tab.url} 
+  className="w-full h-full bg-white" 
+  allowpopups={"true" as any} 
+/>
               )}
             </div>
           ))}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { motion, useTransform, useSpring, useMotionValue, AnimatePresence } from "framer-motion";
 import { Search, ArrowRight, Sparkles, MonitorPlay, Database, LayoutTemplate, Cpu, Github, Plus } from "lucide-react";
 
