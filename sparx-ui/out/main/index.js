@@ -37,6 +37,19 @@ electron.app.whenReady().then(() => {
     utils.optimizer.watchWindowShortcuts(window);
   });
   electron.ipcMain.on("ping", () => console.log("pong"));
+  const filter = {
+    urls: [
+      "*://*.google-analytics.com/*",
+      "*://*.doubleclick.net/*",
+      "*://*.facebook.com/tr/*",
+      "*://*.hotjar.com/*",
+      "*://*.quantserve.com/*",
+      "*://*.scorecardresearch.com/*"
+    ]
+  };
+  electron.session.defaultSession.webRequest.onBeforeRequest(filter, (_details, callback) => {
+    callback({ cancel: true });
+  });
   createWindow();
   electron.app.on("activate", function() {
     if (electron.BrowserWindow.getAllWindows().length === 0) createWindow();

@@ -1,0 +1,35 @@
+npm warn Unknown project config "electron_mirror". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm warn Unknown project config "electron_builder_binaries_mirror". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+> sparx-ui@1.0.0 start
+> electron-vite preview
+
+vite v7.3.1 building ssr environment for production...
+(node:132822) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///app/sparx-ui/postcss.config.js?t=1784898097981 is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /app/sparx-ui/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+transforming...
+✓ 2 modules transformed.
+rendering chunks...
+out/main/index.js  1.96 kB
+✓ built in 383ms
+vite v7.3.1 building ssr environment for production...
+transforming...
+✓ 1 modules transformed.
+rendering chunks...
+out/preload/index.js  0.42 kB
+✓ built in 18ms
+vite v7.3.1 building client environment for production...
+transforming...
+✓ 3134 modules transformed.
+rendering chunks...
+../../out/renderer/index.html                     0.69 kB
+../../out/renderer/assets/index-B4PpqpoN.css     32.96 kB
+../../out/renderer/assets/index-Ca9DBP3F.js   2,867.44 kB
+✓ built in 9.72s
+
+starting electron app...
+
+[133132:0724/130148.437320:ERROR:ui/ozone/platform/x11/ozone_platform_x11.cc:249] Missing X server or $DISPLAY
+[133132:0724/130148.437384:ERROR:ui/aura/env.cc:257] The platform failed to initialize.  Exiting.

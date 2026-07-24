@@ -237,94 +237,118 @@ export default function App(): ReactElement {
     <div style={{ ...cssVars, background: T.bg, color: T.text, fontFamily: '"DM Sans", system-ui, sans-serif' }} className="h-screen w-full overflow-hidden flex flex-col select-none">
       <style>{`@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap'); * { box-sizing: border-box; } ::-webkit-scrollbar { width: 4px; height: 4px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: ${T.border}; border-radius: 99px; } ::-webkit-scrollbar-thumb:hover { background: ${T.textMuted}; } .no-scrollbar::-webkit-scrollbar { display: none; } .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; } .proto-badge { font-family: 'DM Mono', monospace; } .tab-strip-shadow { box-shadow: inset 0 -1px 0 ${T.border}; } .frosted { backdrop-filter: blur(20px) saturate(180%); } @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } } .suggestion-item { animation: fadeSlideIn 0.15s ease forwards; }`}</style>
 
-      {/* TOP CHROME: TAB BAR */}
-      <div style={{ background: T.sidebarBg, borderBottom: `1px solid ${T.border}` }} className="flex items-end h-11 px-2 gap-0.5 shrink-0 pt-2 frosted">
-        {[...tabs.filter(t => t.pinned), ...tabs.filter(t => !t.pinned)].map(tab => (
-          <motion.div key={tab.id} layout initial={{ opacity: 0, scaleX: 0.85 }} animate={{ opacity: 1, scaleX: 1 }} exit={{ opacity: 0, scaleX: 0.85 }} onClick={() => handleSwitchTab(tab)} className="group relative flex items-center gap-2 cursor-pointer" style={{ minWidth: tab.pinned ? 40 : 120, maxWidth: tab.pinned ? 40 : 220, height: 36, padding: tab.pinned ? '0 10px' : '0 12px', borderRadius: '8px 8px 0 0', background: activeTabId === tab.id ? T.surface : 'transparent', borderTop: activeTabId === tab.id ? `1px solid ${T.border}` : '1px solid transparent', borderLeft: activeTabId === tab.id ? `1px solid ${T.border}` : '1px solid transparent', borderRight: activeTabId === tab.id ? `1px solid ${T.border}` : '1px solid transparent', borderBottom: activeTabId === tab.id ? `1px solid ${T.surface}` : 'none', marginBottom: activeTabId === tab.id ? -1 : 0, }}>
-            {tab.favicon ? <img src={tab.favicon} className="w-4 h-4 shrink-0 rounded" alt="" onError={e => (e.currentTarget.style.display = 'none')} /> : <Globe style={{ color: T.textMuted }} className="w-3.5 h-3.5 shrink-0" />}
-            {!tab.pinned && (
-              <>
-                <span style={{ color: activeTabId === tab.id ? T.text : T.textMuted, fontSize: 12, fontWeight: 500 }} className="truncate flex-1">{tab.isLoading ? 'Loading…' : tab.title}</span>
-                <button onClick={e => handleCloseTab(e, tab.id)} style={{ color: T.textMuted, borderRadius: 4 }} className="opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/5 p-0.5 ml-1"><X className="w-3 h-3" /></button>
-              </>
-            )}
-            {activeTabId === tab.id && <div style={{ background: T.surface }} className="absolute bottom-0 left-0 right-0 h-px" />}
-          </motion.div>
-        ))}
-        <button onClick={handleAddTab} style={{ color: T.textMuted, borderRadius: 6 }} className="flex items-center justify-center w-7 h-7 mb-0.5 hover:bg-black/5 transition-colors ml-1"><Plus className="w-4 h-4" /></button>
-        <div className="flex-1" />
-      </div>
-
-      {/* NAVIGATION BAR */}
-      <div style={{ background: T.surface, borderBottom: `1px solid ${T.border}` }} className="h-12 flex items-center px-3 gap-2 shrink-0">
+      {/* MAIN LAYOUT */}
+      <div className="flex flex-1 overflow-hidden relative w-full h-full">
         
-        {/* WIRED UP BACK / FORWARD / RELOAD */}
-        <div className="flex items-center gap-0.5">
-          <button onClick={() => handleWebviewNav('back')} style={{ color: T.textMuted, borderRadius: 6 }} className="w-8 h-8 flex items-center justify-center hover:bg-black/5 transition-colors"><ChevronLeft className="w-4 h-4" /></button>
-          <button onClick={() => handleWebviewNav('forward')} style={{ color: T.textMuted, borderRadius: 6 }} className="w-8 h-8 flex items-center justify-center hover:bg-black/5 transition-colors"><ChevronRight className="w-4 h-4" /></button>
-          <button onClick={() => handleWebviewNav('reload')} style={{ color: T.textMuted, borderRadius: 6 }} className="w-8 h-8 flex items-center justify-center hover:bg-black/5 transition-colors"><RotateCw className="w-4 h-4" /></button>
-        </div>
-
-        <button onClick={() => handleNavigate('sparx://newtab')} style={{ color: T.textMuted, borderRadius: 6 }} className="w-8 h-8 flex items-center justify-center hover:bg-black/5 transition-colors"><Home className="w-4 h-4" /></button>
-        
-        <div className="flex-1 flex items-center gap-2 h-8 px-3 rounded-full transition-all" style={{ background: T.urlBg, border: `1px solid ${isUrlFocused ? T.urlFocusBorder : T.border}`, boxShadow: isUrlFocused ? `0 0 0 3px ${T.accentDim}` : 'none', }}>
-          <div className="flex items-center gap-1.5 shrink-0">
-            <span title={isPrivacyMode ? "Privacy Mode Active" : ""}>
-              {isPrivacyMode ? <EyeOff className="w-3.5 h-3.5" style={{ color: T.accent }} /> : <Shield className="w-3.5 h-3.5" style={{ color: inputUrl.startsWith('https') ? '#10b981' : T.textMuted }} />}
-            </span>
-            {isDeveloperMode && <span title="Developer Mode Active"><Terminal className="w-3 h-3 ml-1" style={{ color: T.accent }} /></span>}
-          </div>
-          <input 
-            ref={urlInputRef} 
-            type="text" 
-            value={isUrlFocused ? inputUrl : (inputUrl === 'sparx://newtab' ? '' : (() => { try { return new URL(inputUrl).hostname.replace('www.', ''); } catch { return inputUrl; } })())} 
-            onChange={e => setInputUrl(e.target.value)} 
-            onFocus={() => { setIsUrlFocused(true); setTimeout(() => urlInputRef.current?.select(), 10); }} 
-            onBlur={() => setIsUrlFocused(false)} 
-            onKeyDown={(e) => { if (e.key === 'Enter') handleNavigate(); }} 
-            className="flex-1 bg-transparent outline-none text-sm" 
-            style={{ color: T.text, fontFamily: isUrlFocused ? '"DM Mono", monospace' : '"DM Sans", sans-serif', fontSize: 13 }} 
-            placeholder="Search or enter URL…" 
-            spellCheck={false} 
-          />
-          {isUrlFocused && <button onClick={() => handleNavigate()} style={{ color: T.accent }}><ArrowRight className="w-4 h-4" /></button>}
-        </div>
-
-        <button onClick={triggerAutoNote} disabled={isAutoNoting || inputUrl === 'sparx://newtab'} style={{ color: isAutoNoting ? T.accent : T.textMuted, borderRadius: 6 }} className="w-8 h-8 flex items-center justify-center hover:bg-black/5 transition-colors disabled:opacity-50" title="Extract Auto-Note">
-          {isAutoNoting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Wand2 className="w-4 h-4" />}
-        </button>
-        
-        <button onClick={addBookmark} disabled={inputUrl === 'sparx://newtab'} style={{ color: T.textMuted, borderRadius: 6 }} className="w-8 h-8 flex items-center justify-center hover:bg-black/5 transition-colors disabled:opacity-50" title="Bookmark"><Bookmark className="w-4 h-4" /></button>
-        <button onClick={() => setShowCommandPalette(true)} style={{ background: T.accentDim, color: T.accent, border: `1px solid ${T.border}`, borderRadius: 6, fontSize: 11 }} className="h-7 px-2.5 flex items-center gap-1.5 hover:bg-opacity-80 transition-colors"><Command className="w-3 h-3" /><span className="font-medium">K</span></button>
-        
-        <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => setIsChatOpen(p => !p)} style={{ background: isChatOpen ? (isPrivacyMode ? 'linear-gradient(135deg, #f59e0b, #d97706)' : 'linear-gradient(135deg, #3b82f6, #2563eb)') : T.accentDim, color: isChatOpen ? '#fff' : T.accent, borderRadius: 8, border: `1px solid ${isChatOpen ? 'transparent' : T.border}`, }} className="h-8 px-3 flex items-center gap-2 text-xs font-semibold transition-all"><Sparkles className="w-3.5 h-3.5" />Sparx</motion.button>
-        
-        <div className="w-8 h-8 flex items-center justify-center transition-colors relative group" style={{ color: cloudStatus === 'synced' ? '#10b981' : cloudStatus === 'syncing' ? '#3b82f6' : cloudStatus === 'paused' ? '#f59e0b' : '#ef4444' }}>
-          {cloudStatus === 'synced' ? <Cloud className="w-4 h-4" /> : cloudStatus === 'syncing' ? <Loader2 className="w-4 h-4 animate-spin" /> : cloudStatus === 'paused' ? <PauseCircle className="w-4 h-4" /> : <CloudOff className="w-4 h-4" />}
-          <div className="absolute top-10 right-0 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 shadow-lg" style={{ background: T.surfaceHover, color: T.text, border: `1px solid ${T.border}` }}>{cloudStatus === 'synced' ? 'Data synced to Sparx Cloud' : cloudStatus === 'syncing' ? 'Syncing...' : cloudStatus === 'paused' ? 'Cloud Sync Paused (Privacy Mode)' : 'Cloud sync disconnected'}</div>
-        </div>
-
-        <button onClick={() => setIsSettingsOpen(true)} style={{ color: T.textMuted, borderRadius: 6 }} className="w-8 h-8 flex items-center justify-center hover:bg-black/5 transition-colors"><Settings className="w-4 h-4" /></button>
-      </div>
-
-      {/* MAIN CONTENT AREA */}
-      <div className="flex flex-1 overflow-hidden relative">
-        
-        <div className="flex-1 relative overflow-hidden" style={{ background: T.bg }}>
-          {tabs.map(tab => (
-            <div key={tab.id} className="absolute inset-0 w-full h-full" style={{ display: activeTabId === tab.id ? 'flex' : 'none' }}>
-              {tab.url === 'sparx://newtab' ? (
-                <ScrollMorphHero onNavigate={handleNavigate} T={T} isPrivacyMode={isPrivacyMode} />
-              ) : (
-               <webview 
-  id={`webview-${tab.id}`} 
-  src={tab.url} 
-  className="w-full h-full bg-white" 
-  allowpopups={"true" as any} 
-/>
-              )}
+        {/* VERTICAL SIDEBAR TABS */}
+        <div style={{ background: T.sidebarBg, borderRight: `1px solid ${T.border}`, width: 240 }} className="h-full flex flex-col shrink-0 frosted z-20 shadow-sm relative">
+          {/* Profile / Controls */}
+          <div className="flex items-center justify-between p-3 shrink-0" style={{ borderBottom: `1px solid ${T.border}` }}>
+            <div className="flex items-center gap-2">
+               <div className="w-8 h-8 rounded-lg flex items-center justify-center shadow-sm" style={{ background: isPrivacyMode ? 'linear-gradient(135deg, #f59e0b, #d97706)' : 'linear-gradient(135deg, #3b82f6, #2563eb)' }}>
+                 <Sparkles className="w-4 h-4 text-white" />
+               </div>
+               <span style={{ color: T.text, fontSize: 15, fontWeight: 700, letterSpacing: '-0.02em' }}>Sparx</span>
             </div>
-          ))}
+            <div className="flex gap-1">
+              <button onClick={() => setShowCommandPalette(true)} style={{ color: T.textMuted, borderRadius: 6 }} className="w-8 h-8 flex items-center justify-center hover:bg-black/5 transition-colors"><Command className="w-4 h-4" /></button>
+              <button onClick={() => setIsSettingsOpen(true)} style={{ color: T.textMuted, borderRadius: 6 }} className="w-8 h-8 flex items-center justify-center hover:bg-black/5 transition-colors"><Settings className="w-4 h-4" /></button>
+            </div>
+          </div>
+
+          {/* Global Actions */}
+          <div className="p-2 space-y-1">
+            <button onClick={() => handleNavigate('sparx://newtab')} style={{ color: T.text, borderRadius: 8 }} className="w-full h-9 flex items-center gap-3 px-3 hover:bg-black/5 transition-colors text-sm font-medium">
+              <Home className="w-4 h-4" style={{ color: T.textMuted }} /> New Tab
+            </button>
+            <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={() => setIsChatOpen(p => !p)} style={{ background: isChatOpen ? (isPrivacyMode ? 'linear-gradient(135deg, #f59e0b, #d97706)' : 'linear-gradient(135deg, #3b82f6, #2563eb)') : 'transparent', color: isChatOpen ? '#fff' : T.text, borderRadius: 8, border: `1px solid ${isChatOpen ? 'transparent' : 'transparent'}`, }} className={`w-full h-9 flex items-center gap-3 px-3 transition-all text-sm font-medium ${!isChatOpen ? 'hover:bg-black/5' : 'shadow-sm'}`}>
+              <Sparkles className="w-4 h-4" style={{ color: isChatOpen ? '#fff' : T.textMuted }} /> AI Assistant
+            </motion.button>
+          </div>
+
+          <div className="flex-1 overflow-y-auto p-2 space-y-1 no-scrollbar">
+             <div style={{ color: T.textMuted, fontSize: 10, fontWeight: 600, letterSpacing: '0.06em', textTransform: 'uppercase', padding: '8px 12px 4px' }}>Open Tabs</div>
+             {[...tabs.filter(t => t.pinned), ...tabs.filter(t => !t.pinned)].map(tab => (
+              <motion.div key={tab.id} layout initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} onClick={() => handleSwitchTab(tab)} className="group relative flex items-center gap-3 cursor-pointer transition-colors" style={{ height: 36, padding: '0 12px', borderRadius: '8px', background: activeTabId === tab.id ? T.surface : 'transparent', border: activeTabId === tab.id ? `1px solid ${T.border}` : '1px solid transparent', boxShadow: activeTabId === tab.id ? T.shadowSm : 'none', }}>
+                {tab.favicon ? <img src={tab.favicon} className="w-4 h-4 shrink-0 rounded" alt="" onError={e => (e.currentTarget.style.display = 'none')} /> : <Globe style={{ color: T.textMuted }} className="w-4 h-4 shrink-0" />}
+                <span style={{ color: activeTabId === tab.id ? T.text : T.textMuted, fontSize: 13, fontWeight: activeTabId === tab.id ? 500 : 400 }} className="truncate flex-1">{tab.isLoading ? 'Loading…' : tab.title}</span>
+                {!tab.pinned && (
+                  <button onClick={e => handleCloseTab(e, tab.id)} style={{ color: T.textMuted, borderRadius: 4 }} className="opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/10 p-1 shrink-0"><X className="w-3 h-3" /></button>
+                )}
+              </motion.div>
+             ))}
+          </div>
+
+          <div className="p-3 shrink-0" style={{ borderTop: `1px solid ${T.border}` }}>
+             <button onClick={handleAddTab} style={{ color: T.text, background: T.surface, border: `1px solid ${T.border}` }} className="w-full h-9 flex items-center justify-center gap-2 rounded-lg hover:bg-black/5 transition-colors text-sm font-medium shadow-sm"><Plus className="w-4 h-4" /> New Tab</button>
+          </div>
+        </div>
+
+        {/* CONTENT AREA (NAV + WEBVIEW/NEWTAB) */}
+        <div className="flex-1 flex flex-col min-w-0 relative h-full">
+
+          {/* NAVIGATION BAR */}
+          <div style={{ background: T.surface, borderBottom: `1px solid ${T.border}`, paddingLeft: 12, paddingRight: 12 }} className="h-14 flex items-center gap-3 shrink-0 shadow-sm z-10">
+            <div className="flex items-center gap-1">
+              <button onClick={() => handleWebviewNav('back')} style={{ color: T.textMuted, borderRadius: 8 }} className="w-8 h-8 flex items-center justify-center hover:bg-black/5 transition-colors"><ChevronLeft className="w-5 h-5" /></button>
+              <button onClick={() => handleWebviewNav('forward')} style={{ color: T.textMuted, borderRadius: 8 }} className="w-8 h-8 flex items-center justify-center hover:bg-black/5 transition-colors"><ChevronRight className="w-5 h-5" /></button>
+              <button onClick={() => handleWebviewNav('reload')} style={{ color: T.textMuted, borderRadius: 8 }} className="w-8 h-8 flex items-center justify-center hover:bg-black/5 transition-colors"><RotateCw className="w-4 h-4" /></button>
+            </div>
+
+            <div className="flex-1 flex items-center gap-2 h-9 px-4 rounded-xl transition-all shadow-sm" style={{ background: T.urlBg, border: `1px solid ${isUrlFocused ? T.urlFocusBorder : T.border}`, boxShadow: isUrlFocused ? `0 0 0 3px ${T.accentDim}` : 'none', }}>
+              <div className="flex items-center gap-1.5 shrink-0">
+                <span title={isPrivacyMode ? "Privacy Mode Active" : ""}>
+                  {isPrivacyMode ? <EyeOff className="w-4 h-4" style={{ color: T.accent }} /> : <Shield className="w-4 h-4" style={{ color: inputUrl.startsWith('https') ? '#10b981' : T.textMuted }} />}
+                </span>
+                {isDeveloperMode && <span title="Developer Mode Active"><Terminal className="w-3.5 h-3.5 ml-1" style={{ color: T.accent }} /></span>}
+              </div>
+              <input
+                ref={urlInputRef}
+                type="text"
+                value={isUrlFocused ? inputUrl : (inputUrl === 'sparx://newtab' ? '' : (() => { try { return new URL(inputUrl).hostname.replace('www.', ''); } catch { return inputUrl; } })())}
+                onChange={e => setInputUrl(e.target.value)}
+                onFocus={() => { setIsUrlFocused(true); setTimeout(() => urlInputRef.current?.select(), 10); }}
+                onBlur={() => setIsUrlFocused(false)}
+                onKeyDown={(e) => { if (e.key === 'Enter') handleNavigate(); }}
+                className="flex-1 bg-transparent outline-none text-[13px]"
+                style={{ color: T.text, fontFamily: isUrlFocused ? '"DM Mono", monospace' : '"DM Sans", sans-serif' }}
+                placeholder="Search or enter URL…"
+                spellCheck={false}
+              />
+              {isUrlFocused && <button onClick={() => handleNavigate()} style={{ color: T.accent }} className="p-1 rounded hover:bg-black/5"><ArrowRight className="w-4 h-4" /></button>}
+            </div>
+
+            <div className="flex items-center gap-1 shrink-0">
+              <button onClick={triggerAutoNote} disabled={isAutoNoting || inputUrl === 'sparx://newtab'} style={{ color: isAutoNoting ? T.accent : T.textMuted, borderRadius: 8 }} className="w-9 h-9 flex items-center justify-center hover:bg-black/5 transition-colors disabled:opacity-50" title="Extract Auto-Note">
+                {isAutoNoting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Wand2 className="w-4 h-4" />}
+              </button>
+              <button onClick={addBookmark} disabled={inputUrl === 'sparx://newtab'} style={{ color: T.textMuted, borderRadius: 8 }} className="w-9 h-9 flex items-center justify-center hover:bg-black/5 transition-colors disabled:opacity-50" title="Bookmark">
+                <Bookmark className="w-4 h-4" />
+              </button>
+              <div className="w-9 h-9 flex items-center justify-center transition-colors relative group mx-1" style={{ color: cloudStatus === 'synced' ? '#10b981' : cloudStatus === 'syncing' ? '#3b82f6' : cloudStatus === 'paused' ? '#f59e0b' : '#ef4444' }}>
+                {cloudStatus === 'synced' ? <Cloud className="w-4 h-4" /> : cloudStatus === 'syncing' ? <Loader2 className="w-4 h-4 animate-spin" /> : cloudStatus === 'paused' ? <PauseCircle className="w-4 h-4" /> : <CloudOff className="w-4 h-4" />}
+                <div className="absolute top-10 right-0 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 shadow-lg" style={{ background: T.surfaceHover, color: T.text, border: `1px solid ${T.border}` }}>{cloudStatus === 'synced' ? 'Data synced to Sparx Cloud' : cloudStatus === 'syncing' ? 'Syncing...' : cloudStatus === 'paused' ? 'Cloud Sync Paused (Privacy Mode)' : 'Cloud sync disconnected'}</div>
+              </div>
+            </div>
+          </div>
+
+          {/* WEBVIEW AREA */}
+          <div className="flex-1 relative overflow-hidden" style={{ background: T.bg }}>
+            {tabs.map(tab => (
+              <div key={tab.id} className="absolute inset-0 w-full h-full" style={{ display: activeTabId === tab.id ? 'flex' : 'none' }}>
+                {tab.url === 'sparx://newtab' ? (
+                  <ScrollMorphHero onNavigate={handleNavigate} T={T} isPrivacyMode={isPrivacyMode} />
+                ) : (
+                 <webview
+    id={`webview-${tab.id}`}
+    src={tab.url}
+    className="w-full h-full bg-white"
+    allowpopups={"true" as any}
+  />
+                )}
+              </div>
+            ))}
+          </div>
         </div>
 
         <AnimatePresence>

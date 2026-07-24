@@ -1,0 +1,10 @@
+--- sparx-ui/src/main/index.ts
++++ sparx-ui/src/main/index.ts
+@@ -69,7 +69,7 @@
+     ]
+   }
+
+-  session.defaultSession.webRequest.onBeforeRequest(filter, (details, callback) => {
++  session.defaultSession.webRequest.onBeforeRequest(filter, (_details, callback) => {
+     callback({ cancel: true })
+   })

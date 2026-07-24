@@ -1,5 +1,5 @@
 // 1. ADD 'nativeTheme' TO THIS IMPORT
-import { app, shell, BrowserWindow, ipcMain, nativeTheme, session } from 'electron'
+import { app, shell, BrowserWindow, ipcMain, nativeTheme } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -56,22 +56,6 @@ app.whenReady().then(() => {
 
   // IPC test
   ipcMain.on('ping', () => console.log('pong'))
-
-  // Implement Basic Privacy Shield using network request interceptor
-  const filter = {
-    urls: [
-      '*://*.google-analytics.com/*',
-      '*://*.doubleclick.net/*',
-      '*://*.facebook.com/tr/*',
-      '*://*.hotjar.com/*',
-      '*://*.quantserve.com/*',
-      '*://*.scorecardresearch.com/*'
-    ]
-  }
-
-  session.defaultSession.webRequest.onBeforeRequest(filter, (_details, callback) => {
-    callback({ cancel: true })
-  })
 
   createWindow()
 

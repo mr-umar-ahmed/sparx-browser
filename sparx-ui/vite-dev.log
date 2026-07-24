@@ -1,0 +1,13 @@
+npm warn Unknown project config "electron_mirror". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+npm warn Unknown project config "electron_builder_binaries_mirror". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+
+  VITE v7.3.1  ready in 248 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+(node:161463) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///app/sparx-ui/postcss.config.js?t=1784898229020 is not specified and it doesn't parse as CommonJS.
+Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+To eliminate this warning, add "type": "module" to /app/sparx-ui/package.json.
+(Use `node --trace-warnings ...` to show where the warning was created)
+1:04:38 PM [vite] (client) ✨ new dependencies optimized: react/jsx-dev-runtime
+1:04:38 PM [vite] (client) ✨ optimized dependencies changed. reloading
