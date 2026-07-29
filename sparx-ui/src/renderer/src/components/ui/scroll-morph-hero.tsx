@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from 'react'
+import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { motion, useTransform, useSpring, useMotionValue, AnimatePresence } from 'framer-motion'
 import {
   Search,
@@ -25,7 +25,19 @@ interface FlipCardProps {
 const IMG_WIDTH = 60
 const IMG_HEIGHT = 85
 
-function FlipCard({ src, index, target, T }: FlipCardProps) {
+/**
+ * ⚡ Bolt Performance Optimization:
+ * Wrapped FlipCard in React.memo() to prevent unnecessary re-renders.
+ *
+ * 💡 What: Used React.memo on the FlipCard component.
+ * 🎯 Why: The parent ScrollMorphHero component re-renders frequently (e.g., when the search query changes or scroll position updates).
+ *         These 20 FlipCard components are computationally expensive to re-render.
+ * 📊 Impact: Prevents 20 FlipCards from re-rendering on every keystroke in the search bar,
+ *         significantly reducing CPU usage and improving the responsiveness of the input field.
+ * 🔬 Measurement: Observe the React Profiler while typing in the search bar.
+ *         FlipCard render times will drop to 0ms for unchanged props.
+ */
+const FlipCard = React.memo(function FlipCard({ src, index, target, T }: FlipCardProps) {
   const fallbackSrc =
     'https://images.unsplash.com/photo-1558494949-ef0d38d3f9b2?auto=format&fit=crop&w=200&q=75'
 
@@ -93,7 +105,7 @@ function FlipCard({ src, index, target, T }: FlipCardProps) {
       </motion.div>
     </motion.div>
   )
-}
+})
 
 const TOTAL_IMAGES = 20
 const MAX_SCROLL = 3000
