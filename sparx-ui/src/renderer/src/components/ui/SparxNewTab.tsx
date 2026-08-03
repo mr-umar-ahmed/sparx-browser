@@ -152,6 +152,21 @@ export default function SparxNewTab({
   useEffect(() => {
     const fetchLiveData = async () => {
       try {
+        // Bolt ⚡ Optimization: Cache expensive external API calls in sessionStorage for 5 minutes
+        // Reduces network requests on frequent New Tab openings
+        const CACHE_KEY = 'sparx_live_data_cache'
+        const CACHE_TTL = 5 * 60 * 1000 // 5 minutes
+
+        const cached = sessionStorage.getItem(CACHE_KEY)
+        if (cached) {
+          const { timestamp, techNews: cachedNews, githubTrending: cachedTrending } = JSON.parse(cached)
+          if (Date.now() - timestamp < CACHE_TTL) {
+            setTechNews(cachedNews)
+            setGithubTrending(cachedTrending)
+            return
+          }
+        }
+
         const hnRes = await fetch('https://hacker-news.firebaseio.com/v0/topstories.json')
         const hnIds = await hnRes.json()
         const topIds = hnIds.slice(0, 3)
@@ -160,7 +175,8 @@ export default function SparxNewTab({
             fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`).then((r) => r.json())
           )
         )
-        setTechNews([...stories.filter(Boolean), ...initialFakeNews].slice(0, 5))
+        const newTechNews = [...stories.filter(Boolean), ...initialFakeNews].slice(0, 5)
+        setTechNews(newTechNews)
 
         const date = new Date()
         date.setDate(date.getDate() - 7)
@@ -171,7 +187,17 @@ export default function SparxNewTab({
         )
         const ghData = await ghRes.json()
         const realRepos = ghData.items ? ghData.items.slice(0, 2) : []
-        setGithubTrending([...realRepos, ...initialFakeRepos].slice(0, 4))
+        const newGithubTrending = [...realRepos, ...initialFakeRepos].slice(0, 4)
+        setGithubTrending(newGithubTrending)
+
+        sessionStorage.setItem(
+          CACHE_KEY,
+          JSON.stringify({
+            timestamp: Date.now(),
+            techNews: newTechNews,
+            githubTrending: newGithubTrending
+          })
+        )
       } catch (error) {
         console.error('Failed to fetch live data, using fallbacks.', error)
       }
