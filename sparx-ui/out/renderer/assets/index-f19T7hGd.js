@@ -53631,6 +53631,171 @@ const vs = {
     "background": "linear-gradient(to right, rgba(193, 222, 241, 0.2) 70%, rgba(221, 222, 241, 0))"
   }
 };
+const TypingIndicator = ({ color: color2 }) => /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-1 px-4 py-3", children: [0, 1, 2].map((i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+  motion.span,
+  {
+    className: "block w-1.5 h-1.5 rounded-full",
+    style: { backgroundColor: color2 },
+    animate: { y: [0, -5, 0] },
+    transition: { duration: 0.7, repeat: Infinity, delay: i * 0.15 }
+  },
+  i
+)) });
+const ChatMessage = React.memo(
+  ({ msg, isPrivacyMode, T, copyToClipboard, handleSaveToWorkspace }) => {
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: `flex ${msg.role === "user" ? "justify-end" : "justify-start"}`, children: [
+      msg.role === "ai" && /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: "w-6 h-6 rounded-md flex items-center justify-center shrink-0 mt-1 mr-2",
+          style: {
+            background: isPrivacyMode ? "linear-gradient(135deg, #f59e0b, #d97706)" : "linear-gradient(135deg, #3b82f6, #2563eb)"
+          },
+          children: /* @__PURE__ */ jsxRuntimeExports.jsx(Sparkles, { className: "w-3 h-3 text-white" })
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "div",
+        {
+          className: "max-w-[82%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm",
+          style: msg.role === "user" ? {
+            background: T.userBubble,
+            color: "#fff",
+            borderRadius: "16px 4px 16px 16px"
+          } : {
+            background: T.aiBubble,
+            border: `1px solid ${T.aiBubbleBorder}`,
+            color: T.text,
+            borderRadius: "4px 16px 16px 16px"
+          },
+          children: msg.role === "user" ? /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "whitespace-pre-wrap", style: { fontSize: 13 }, children: msg.content }) : msg.content === "" ? /* @__PURE__ */ jsxRuntimeExports.jsx(TypingIndicator, { color: isPrivacyMode ? "#f59e0b" : "#3b82f6" }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { fontSize: 13 }, children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(
+              Markdown,
+              {
+                components: {
+                  h1: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { style: { color: T.text, fontWeight: 700, fontSize: 16, marginBottom: 8 }, children }),
+                  h2: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { style: { color: T.text, fontWeight: 600, fontSize: 14, marginBottom: 6 }, children }),
+                  h3: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { style: { color: T.text, fontWeight: 600, fontSize: 13, marginBottom: 4 }, children }),
+                  p: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx("p", { style: { marginBottom: 8, lineHeight: 1.6 }, children }),
+                  ul: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { style: { paddingLeft: 16, marginBottom: 8, listStyle: "disc" }, children }),
+                  ol: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx("ol", { style: { paddingLeft: 16, marginBottom: 8, listStyle: "decimal" }, children }),
+                  li: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx("li", { style: { marginBottom: 3, lineHeight: 1.5 }, children }),
+                  strong: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { style: { color: T.text, fontWeight: 600 }, children }),
+                  a: ({ href, children }) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "a",
+                    {
+                      href,
+                      style: {
+                        color: T.accent,
+                        textDecoration: "underline",
+                        textUnderlineOffset: 2
+                      },
+                      children
+                    }
+                  ),
+                  code({ node: node2, inline, className, children, ...props }) {
+                    const match = /language-(\w+)/.exec(className || "");
+                    const codeText2 = String(children).replace(/\n$/, "");
+                    return !inline && match ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                      "div",
+                      {
+                        className: "relative group/code my-3 shadow-sm",
+                        style: {
+                          borderRadius: 10,
+                          overflow: "hidden",
+                          border: `1px solid ${T.border}`
+                        },
+                        children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(
+                            highlighter,
+                            {
+                              ...props,
+                              style: vs,
+                              language: match[1],
+                              PreTag: "div",
+                              customStyle: {
+                                margin: 0,
+                                fontSize: 12,
+                                fontFamily: '"DM Mono", monospace',
+                                background: T.surface
+                              },
+                              children: codeText2
+                            }
+                          ),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(
+                            "button",
+                            {
+                              onClick: () => copyToClipboard(codeText2),
+                              className: "absolute top-2 right-2 opacity-0 group-hover/code:opacity-100 transition-opacity",
+                              style: {
+                                background: "rgba(0,0,0,0.05)",
+                                border: "1px solid rgba(0,0,0,0.1)",
+                                borderRadius: 6,
+                                padding: "4px 6px"
+                              },
+                              children: /* @__PURE__ */ jsxRuntimeExports.jsx(Copy, { className: "w-3 h-3 text-gray-500" })
+                            }
+                          )
+                        ]
+                      }
+                    ) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "code",
+                      {
+                        style: {
+                          background: T.accentDim,
+                          color: T.accent,
+                          padding: "1px 6px",
+                          borderRadius: 4,
+                          fontFamily: '"DM Mono", monospace',
+                          fontSize: 12
+                        },
+                        children
+                      }
+                    );
+                  }
+                },
+                children: msg.content || " "
+              }
+            ),
+            msg.content && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "div",
+              {
+                className: "flex items-center gap-3 mt-3 pt-2 border-t",
+                style: { borderColor: T.border },
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    "button",
+                    {
+                      onClick: () => copyToClipboard(msg.content),
+                      className: "flex items-center gap-1.5 transition-colors hover:text-blue-500",
+                      style: { color: T.textMuted, fontSize: 11 },
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(Copy, { className: "w-3 h-3" }),
+                        " Copy"
+                      ]
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    "button",
+                    {
+                      onClick: () => handleSaveToWorkspace(msg.content),
+                      className: "flex items-center gap-1.5 transition-colors hover:text-blue-500",
+                      style: { color: T.textMuted, fontSize: 11 },
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(Library, { className: "w-3 h-3" }),
+                        " Save to Workspace"
+                      ]
+                    }
+                  )
+                ]
+              }
+            )
+          ] })
+        }
+      )
+    ] });
+  }
+);
 const getDefaultsFromPostinstall = () => void 0;
 var define_process_env_default = {};
 const stringToByteArray$1 = function(str) {
@@ -72971,8 +73136,14 @@ const getFavicon = (url) => {
   }
 };
 function useBrowser() {
-  const [tabs, setTabs] = reactExports.useState(() => safeParse("sparx_tabs", [{ id: "1", title: "New Tab", url: "sparx://newtab", isLoading: false }]));
-  const [activeTabId, setActiveTabId] = reactExports.useState(() => localStorage.getItem("sparx_activeTab") || "1");
+  const [tabs, setTabs] = reactExports.useState(
+    () => safeParse("sparx_tabs", [
+      { id: "1", title: "New Tab", url: "sparx://newtab", isLoading: false }
+    ])
+  );
+  const [activeTabId, setActiveTabId] = reactExports.useState(
+    () => localStorage.getItem("sparx_activeTab") || "1"
+  );
   const [inputUrl, setInputUrl] = reactExports.useState("");
   const [isUrlFocused, setIsUrlFocused] = reactExports.useState(false);
   const [canGoBack, setCanGoBack] = reactExports.useState(false);
@@ -73011,17 +73182,20 @@ function useBrowser() {
     setActiveTabId(id2);
     setInputUrl("");
   }, []);
-  const handleCloseTab = reactExports.useCallback((e, id2) => {
-    e.stopPropagation();
-    if (tabs.length === 1) return;
-    const next = tabs.filter((t) => t.id !== id2);
-    setTabs(next);
-    if (activeTabId === id2) {
-      const nextActive = next[next.length - 1];
-      setActiveTabId(nextActive.id);
-      setInputUrl(nextActive.url === "sparx://newtab" ? "" : nextActive.url);
-    }
-  }, [tabs, activeTabId]);
+  const handleCloseTab = reactExports.useCallback(
+    (e, id2) => {
+      e.stopPropagation();
+      if (tabs.length === 1) return;
+      const next = tabs.filter((t) => t.id !== id2);
+      setTabs(next);
+      if (activeTabId === id2) {
+        const nextActive = next[next.length - 1];
+        setActiveTabId(nextActive.id);
+        setInputUrl(nextActive.url === "sparx://newtab" ? "" : nextActive.url);
+      }
+    },
+    [tabs, activeTabId]
+  );
   const handleSwitchTab = reactExports.useCallback((tab2) => {
     setActiveTabId(tab2.id);
     setInputUrl(tab2.url === "sparx://newtab" ? "" : tab2.url);
@@ -73030,29 +73204,36 @@ function useBrowser() {
     e.stopPropagation();
     setTabs((p) => p.map((t) => t.id === id2 ? { ...t, pinned: !t.pinned } : t));
   }, []);
-  const handleNavigate = reactExports.useCallback((newUrl) => {
-    let url = (newUrl || inputUrl).trim();
-    if (!url) return;
-    if (url !== "sparx://newtab") {
-      if (!url.includes(".") || url.includes(" ")) {
-        url = `https://www.google.com/search?q=${encodeURIComponent(url)}`;
-      } else if (!url.startsWith("http")) {
-        url = "https://" + url;
+  const handleNavigate = reactExports.useCallback(
+    (newUrl) => {
+      let url = (newUrl || inputUrl).trim();
+      if (!url) return;
+      if (url !== "sparx://newtab") {
+        if (!url.includes(".") || url.includes(" ")) {
+          url = `https://www.google.com/search?q=${encodeURIComponent(url)}`;
+        } else if (!url.startsWith("http")) {
+          url = "https://" + url;
+        }
       }
-    }
-    const title = url === "sparx://newtab" ? "New Tab" : (() => {
-      try {
-        return new URL(url).hostname.replace("www.", "");
-      } catch {
-        return url.slice(0, 24);
+      const title = url === "sparx://newtab" ? "New Tab" : (() => {
+        try {
+          return new URL(url).hostname.replace("www.", "");
+        } catch {
+          return url.slice(0, 24);
+        }
+      })();
+      if (!isPrivacyMode && url !== "sparx://newtab") {
+        setHistory((p) => [{ title, url }, ...p].slice(0, 50));
       }
-    })();
-    if (!isPrivacyMode && url !== "sparx://newtab") {
-      setHistory((p) => [{ title, url }, ...p].slice(0, 50));
-    }
-    setTabs((p) => p.map((t) => t.id === activeTabId ? { ...t, url, title, favicon: getFavicon(url) ?? void 0 } : t));
-    setInputUrl(url === "sparx://newtab" ? "" : url);
-  }, [inputUrl, activeTabId, isPrivacyMode]);
+      setTabs(
+        (p) => p.map(
+          (t) => t.id === activeTabId ? { ...t, url, title, favicon: getFavicon(url) ?? void 0 } : t
+        )
+      );
+      setInputUrl(url === "sparx://newtab" ? "" : url);
+    },
+    [inputUrl, activeTabId, isPrivacyMode]
+  );
   const addBookmark = reactExports.useCallback(() => {
     const active = tabs.find((t) => t.id === activeTabId);
     if (!active || active.url === "sparx://newtab") return;
@@ -73099,9 +73280,17 @@ function useChat(activeTabId, tabs, isDeveloperMode) {
   const [uploadedPdfText, setUploadedPdfText] = reactExports.useState("");
   const [pdfName, setPdfName] = reactExports.useState("");
   const [isUploading, setIsUploading] = reactExports.useState(false);
-  const [chatHistory, setChatHistory] = reactExports.useState(() => safeParse("sparx_chat", [{ role: "ai", content: `## Welcome to Sparx ✦
+  const [chatHistory, setChatHistory] = reactExports.useState(
+    () => safeParse("sparx_chat", [
+      {
+        role: "ai",
+        content: `## Welcome to Sparx ✦
 
-I'm your intelligent browsing companion.`, timestamp: /* @__PURE__ */ new Date() }]));
+I'm your intelligent browsing companion.`,
+        timestamp: /* @__PURE__ */ new Date()
+      }
+    ])
+  );
   reactExports.useEffect(() => {
     localStorage.setItem("sparx_chat", JSON.stringify(chatHistory));
   }, [chatHistory]);
@@ -73125,7 +73314,8 @@ I'm your intelligent browsing companion.`, timestamp: /* @__PURE__ */ new Date()
       if (webview?.executeJavaScript) {
         try {
           const text2 = await webview.executeJavaScript("document.body.innerText");
-          if (text2) combinedText += `
+          if (text2)
+            combinedText += `
 
 --- CONTENT FROM TAB: ${tab2.title} (${tab2.url}) ---
 ${text2.substring(0, 2500)}`;
@@ -73143,16 +73333,33 @@ ${text2.substring(0, 2500)}`;
     const formData = new FormData();
     formData.append("file", file);
     try {
-      const res = await fetch("http://127.0.0.1:8000/api/extract-pdf", { method: "POST", body: formData });
+      const res = await fetch("http://127.0.0.1:8000/api/extract-pdf", {
+        method: "POST",
+        body: formData
+      });
       const data = await res.json();
       if (data.text) {
         setUploadedPdfText(data.text);
-        setChatHistory((p) => [...p, { role: "ai", content: `**${file.name}** loaded successfully.
+        setChatHistory((p) => [
+          ...p,
+          {
+            role: "ai",
+            content: `**${file.name}** loaded successfully.
 
-What would you like to know about this document?`, timestamp: /* @__PURE__ */ new Date() }]);
+What would you like to know about this document?`,
+            timestamp: /* @__PURE__ */ new Date()
+          }
+        ]);
       } else throw new Error(data.error || "Unknown error");
     } catch (err) {
-      setChatHistory((p) => [...p, { role: "ai", content: `Could not read the PDF. ${err instanceof Error ? err.message : "Please try again."}`, timestamp: /* @__PURE__ */ new Date() }]);
+      setChatHistory((p) => [
+        ...p,
+        {
+          role: "ai",
+          content: `Could not read the PDF. ${err instanceof Error ? err.message : "Please try again."}`,
+          timestamp: /* @__PURE__ */ new Date()
+        }
+      ]);
     } finally {
       setIsUploading(false);
     }
@@ -73172,12 +73379,22 @@ What would you like to know about this document?`, timestamp: /* @__PURE__ */ ne
       });
       const data = await res.json();
       if (data.success) {
-        setChatHistory((p) => [...p, { role: "ai", content: `🧠 **Memory Updated!**
+        setChatHistory((p) => [
+          ...p,
+          {
+            role: "ai",
+            content: `🧠 **Memory Updated!**
 
-I have successfully vectorized and saved **"${activeTab.title}"** into your permanent knowledge base. You can now ask me about this topic anytime, even if you close the tab.`, timestamp: /* @__PURE__ */ new Date() }]);
+I have successfully vectorized and saved **"${activeTab.title}"** into your permanent knowledge base. You can now ask me about this topic anytime, even if you close the tab.`,
+            timestamp: /* @__PURE__ */ new Date()
+          }
+        ]);
       } else throw new Error(data.error || "Failed to memorize.");
     } catch (err) {
-      setChatHistory((p) => [...p, { role: "ai", content: `❌ Memory Error: ${err.message}`, timestamp: /* @__PURE__ */ new Date() }]);
+      setChatHistory((p) => [
+        ...p,
+        { role: "ai", content: `❌ Memory Error: ${err.message}`, timestamp: /* @__PURE__ */ new Date() }
+      ]);
     } finally {
       setIsTyping(false);
     }
@@ -73219,7 +73436,11 @@ I have successfully vectorized and saved **"${activeTab.title}"** into your perm
       setCurrentMessage("");
       return handleMemorizePage();
     }
-    setChatHistory((p) => [...p, { role: "user", content: msg, timestamp: /* @__PURE__ */ new Date() }, { role: "ai", content: "", timestamp: /* @__PURE__ */ new Date() }]);
+    setChatHistory((p) => [
+      ...p,
+      { role: "user", content: msg, timestamp: /* @__PURE__ */ new Date() },
+      { role: "ai", content: "", timestamp: /* @__PURE__ */ new Date() }
+    ]);
     setCurrentMessage("");
     setIsTyping(true);
     try {
@@ -73272,7 +73493,10 @@ USER MESSAGE: ${msg}`;
           setChatHistory((prev) => {
             const newHistory = [...prev];
             const lastIndex = newHistory.length - 1;
-            newHistory[lastIndex] = { ...newHistory[lastIndex], content: newHistory[lastIndex].content + chunkText };
+            newHistory[lastIndex] = {
+              ...newHistory[lastIndex],
+              content: newHistory[lastIndex].content + chunkText
+            };
             return newHistory;
           });
         }
@@ -73287,13 +73511,29 @@ USER MESSAGE: ${msg}`;
       setIsTyping(false);
     }
   };
-  const clearChat = () => setChatHistory([{ role: "ai", content: "## Fresh start ✦\n\nReady for your next question.", timestamp: /* @__PURE__ */ new Date() }]);
+  const clearChat = () => setChatHistory([
+    {
+      role: "ai",
+      content: "## Fresh start ✦\n\nReady for your next question.",
+      timestamp: /* @__PURE__ */ new Date()
+    }
+  ]);
   const handleWipeMemory = async () => {
-    if (!window.confirm("Are you sure you want to permanently delete all parsed PDFs from Sparx memory?")) return false;
+    if (!window.confirm(
+      "Are you sure you want to permanently delete all parsed PDFs from Sparx memory?"
+    ))
+      return false;
     try {
       const res = await fetch("http://127.0.0.1:8000/api/memory", { method: "DELETE" });
       if (res.ok) {
-        setChatHistory((p) => [...p, { role: "ai", content: "🧠 Memory cleared successfully. I have forgotten all previously uploaded documents.", timestamp: /* @__PURE__ */ new Date() }]);
+        setChatHistory((p) => [
+          ...p,
+          {
+            role: "ai",
+            content: "🧠 Memory cleared successfully. I have forgotten all previously uploaded documents.",
+            timestamp: /* @__PURE__ */ new Date()
+          }
+        ]);
         setPdfName("");
         setUploadedPdfText("");
         return true;
@@ -73303,10 +73543,31 @@ USER MESSAGE: ${msg}`;
     }
     return false;
   };
-  return { aiModel, setAiModel, currentMessage, setCurrentMessage, isTyping, isAutoNoting, pdfName, setPdfName, uploadedPdfText, setUploadedPdfText, isUploading, chatHistory, handleFileUpload, handleSendMessage, handleAutoNote, handleMemorizePage, clearChat, handleWipeMemory };
+  return {
+    aiModel,
+    setAiModel,
+    currentMessage,
+    setCurrentMessage,
+    isTyping,
+    isAutoNoting,
+    pdfName,
+    setPdfName,
+    uploadedPdfText,
+    setUploadedPdfText,
+    isUploading,
+    chatHistory,
+    handleFileUpload,
+    handleSendMessage,
+    handleAutoNote,
+    handleMemorizePage,
+    clearChat,
+    handleWipeMemory
+  };
 }
 function useCloudSync(user, bookmarks, history, notes, setBookmarks, setHistory, setNotes, isPrivacyMode) {
-  const [cloudStatus, setCloudStatus] = reactExports.useState("synced");
+  const [cloudStatus, setCloudStatus] = reactExports.useState(
+    "synced"
+  );
   const [hasLoadedFromCloud, setHasLoadedFromCloud] = reactExports.useState(false);
   reactExports.useEffect(() => {
     if (!user || isPrivacyMode) {
@@ -73359,9 +73620,21 @@ function FlipCard({ src, index: index2, target, T }) {
   return /* @__PURE__ */ jsxRuntimeExports.jsx(
     motion.div,
     {
-      animate: { x: target.x, y: target.y, rotate: target.rotation, scale: target.scale, opacity: target.opacity },
+      animate: {
+        x: target.x,
+        y: target.y,
+        rotate: target.rotation,
+        scale: target.scale,
+        opacity: target.opacity
+      },
       transition: { type: "spring", stiffness: 40, damping: 15 },
-      style: { position: "absolute", width: IMG_WIDTH, height: IMG_HEIGHT, transformStyle: "preserve-3d", perspective: "1000px" },
+      style: {
+        position: "absolute",
+        width: IMG_WIDTH,
+        height: IMG_HEIGHT,
+        transformStyle: "preserve-3d",
+        perspective: "1000px"
+      },
       className: "cursor-pointer group",
       children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
         motion.div,
@@ -73404,7 +73677,14 @@ function FlipCard({ src, index: index2, target, T }) {
                   borderColor: T.border
                 },
                 children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-center", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[8px] font-bold uppercase tracking-widest mb-1", style: { color: T.accent }, children: "View" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "p",
+                    {
+                      className: "text-[8px] font-bold uppercase tracking-widest mb-1",
+                      style: { color: T.accent },
+                      children: "View"
+                    }
+                  ),
                   /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] font-medium", style: { color: T.text }, children: "Details" })
                 ] })
               }
@@ -73462,7 +73742,7 @@ const IMAGES = [
   // 20
 ];
 const lerp = (start, end, t) => start * (1 - t) + end * t;
-function ScrollMorphHero({
+const ScrollMorphHero = React.memo(function ScrollMorphHero2({
   onNavigate,
   T,
   isPrivacyMode
@@ -73483,10 +73763,34 @@ function ScrollMorphHero({
   const greeting = hours < 12 ? "Good morning" : hours < 18 ? "Good afternoon" : "Good evening";
   const shortcuts = [
     { name: "GitHub", url: "https://github.com", icon: Github, color: "#111827", bg: "#f3f4f6" },
-    { name: "Localhost", url: "http://localhost:3000", icon: MonitorPlay, color: "#10b981", bg: "#ecfdf5" },
-    { name: "Firebase", url: "https://console.firebase.google.com", icon: Database, color: "#f59e0b", bg: "#fffbeb" },
-    { name: "React Native", url: "https://reactnative.dev/", icon: LayoutTemplate, color: "#06b6d4", bg: "#ecfeff" },
-    { name: "Hugging Face", url: "https://huggingface.co", icon: Cpu, color: "#fbbf24", bg: "#fffbeb" }
+    {
+      name: "Localhost",
+      url: "http://localhost:3000",
+      icon: MonitorPlay,
+      color: "#10b981",
+      bg: "#ecfdf5"
+    },
+    {
+      name: "Firebase",
+      url: "https://console.firebase.google.com",
+      icon: Database,
+      color: "#f59e0b",
+      bg: "#fffbeb"
+    },
+    {
+      name: "React Native",
+      url: "https://reactnative.dev/",
+      icon: LayoutTemplate,
+      color: "#06b6d4",
+      bg: "#ecfeff"
+    },
+    {
+      name: "Hugging Face",
+      url: "https://huggingface.co",
+      icon: Cpu,
+      color: "#fbbf24",
+      bg: "#fffbeb"
+    }
   ];
   reactExports.useEffect(() => {
     if (!containerRef.current) return;
@@ -73497,7 +73801,10 @@ function ScrollMorphHero({
     };
     const observer2 = new ResizeObserver(handleResize);
     observer2.observe(containerRef.current);
-    setContainerSize({ width: containerRef.current.offsetWidth, height: containerRef.current.offsetHeight });
+    setContainerSize({
+      width: containerRef.current.offsetWidth,
+      height: containerRef.current.offsetHeight
+    });
     return () => observer2.disconnect();
   }, []);
   reactExports.useEffect(() => {
@@ -73561,189 +73868,270 @@ function ScrollMorphHero({
     };
   }, [smoothMorph, smoothScrollRotate, smoothMouseX]);
   const contentOpacity = useTransform(smoothMorph, [0, 0.5], [1, 0]);
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { ref: containerRef, className: "relative w-full h-full overflow-hidden", style: { background: T.bg }, children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute inset-0 overflow-hidden pointer-events-none z-[-1]", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        motion.div,
-        {
-          animate: { x: [0, 30, 0], y: [0, -40, 0], scale: [1, 1.1, 1] },
-          transition: { duration: 15, repeat: Infinity, ease: "easeInOut" },
-          className: `absolute top-[10%] left-[20%] w-[35vw] h-[35vw] rounded-full blur-[100px] opacity-20 ${isPrivacyMode ? "bg-amber-300" : "bg-blue-300"}`
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        motion.div,
-        {
-          animate: { x: [0, -40, 0], y: [0, 30, 0], scale: [1, 1.2, 1] },
-          transition: { duration: 20, repeat: Infinity, ease: "easeInOut", delay: 2 },
-          className: `absolute top-[30%] right-[15%] w-[40vw] h-[40vw] rounded-full blur-[120px] opacity-15 ${isPrivacyMode ? "bg-orange-300" : "bg-emerald-200"}`
-        }
-      )
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 pointer-events-none z-0 flex items-center justify-center perspective-1000", children: IMAGES.slice(0, TOTAL_IMAGES).map((src, i) => {
-      let target = { x: 0, y: 0, rotation: 0, scale: 1, opacity: 1 };
-      if (introPhase === "scatter") {
-        target = scatterPositions[i];
-      } else if (introPhase === "line") {
-        const lineSpacing = 70;
-        const lineTotalWidth = TOTAL_IMAGES * lineSpacing;
-        target = { x: i * lineSpacing - lineTotalWidth / 2, y: -120, rotation: 0, scale: 1, opacity: 1 };
-      } else {
-        const isMobile = containerSize.width < 768;
-        const minDimension = Math.min(containerSize.width, containerSize.height);
-        const circleRadius = Math.min(minDimension * 0.35, 350);
-        const circleAngle = i / TOTAL_IMAGES * 360;
-        const circleRad = circleAngle * Math.PI / 180;
-        const circlePos = { x: Math.cos(circleRad) * circleRadius, y: Math.sin(circleRad) * circleRadius - 80, rotation: circleAngle + 90 };
-        const baseRadius = Math.min(containerSize.width, containerSize.height * 1.5);
-        const arcRadius = baseRadius * (isMobile ? 1.4 : 1.1);
-        const arcApexY = containerSize.height * (isMobile ? 0.35 : 0.25);
-        const arcCenterY = arcApexY + arcRadius;
-        const spreadAngle = isMobile ? 100 : 130;
-        const startAngle = -90 - spreadAngle / 2;
-        const step = spreadAngle / (TOTAL_IMAGES - 1);
-        const scrollProgress = Math.min(Math.max(rotateValue / 360, 0), 1);
-        const maxRotation = spreadAngle * 0.8;
-        const boundedRotation = -scrollProgress * maxRotation;
-        const currentArcAngle = startAngle + i * step + boundedRotation;
-        const arcRad = currentArcAngle * Math.PI / 180;
-        const arcPos = {
-          x: Math.cos(arcRad) * arcRadius + parallaxValue,
-          y: Math.sin(arcRad) * arcRadius + arcCenterY,
-          rotation: currentArcAngle + 90,
-          scale: isMobile ? 1.4 : 1.8
-        };
-        target = {
-          x: lerp(circlePos.x, arcPos.x, morphValue),
-          y: lerp(circlePos.y, arcPos.y, morphValue),
-          rotation: lerp(circlePos.rotation, arcPos.rotation, morphValue),
-          scale: lerp(1, arcPos.scale, morphValue),
-          opacity: 1
-        };
-      }
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(FlipCard, { src, index: i, phase: introPhase, target, T }, i);
-    }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 pointer-events-none z-10 flex flex-col items-center justify-center px-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(motion.div, { style: { opacity: contentOpacity }, className: "flex flex-col items-center w-full max-w-2xl pointer-events-auto", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center mb-8", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    "div",
+    {
+      ref: containerRef,
+      className: "relative w-full h-full overflow-hidden",
+      style: { background: T.bg },
+      children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute inset-0 overflow-hidden pointer-events-none z-[-1]", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            motion.div,
+            {
+              animate: { x: [0, 30, 0], y: [0, -40, 0], scale: [1, 1.1, 1] },
+              transition: { duration: 15, repeat: Infinity, ease: "easeInOut" },
+              className: `absolute top-[10%] left-[20%] w-[35vw] h-[35vw] rounded-full blur-[100px] opacity-20 ${isPrivacyMode ? "bg-amber-300" : "bg-blue-300"}`
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            motion.div,
+            {
+              animate: { x: [0, -40, 0], y: [0, 30, 0], scale: [1, 1.2, 1] },
+              transition: { duration: 20, repeat: Infinity, ease: "easeInOut", delay: 2 },
+              className: `absolute top-[30%] right-[15%] w-[40vw] h-[40vw] rounded-full blur-[120px] opacity-15 ${isPrivacyMode ? "bg-orange-300" : "bg-emerald-200"}`
+            }
+          )
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 pointer-events-none z-0 flex items-center justify-center perspective-1000", children: IMAGES.slice(0, TOTAL_IMAGES).map((src, i) => {
+          let target = { x: 0, y: 0, rotation: 0, scale: 1, opacity: 1 };
+          if (introPhase === "scatter") {
+            target = scatterPositions[i];
+          } else if (introPhase === "line") {
+            const lineSpacing = 70;
+            const lineTotalWidth = TOTAL_IMAGES * lineSpacing;
+            target = {
+              x: i * lineSpacing - lineTotalWidth / 2,
+              y: -120,
+              rotation: 0,
+              scale: 1,
+              opacity: 1
+            };
+          } else {
+            const isMobile = containerSize.width < 768;
+            const minDimension = Math.min(containerSize.width, containerSize.height);
+            const circleRadius = Math.min(minDimension * 0.35, 350);
+            const circleAngle = i / TOTAL_IMAGES * 360;
+            const circleRad = circleAngle * Math.PI / 180;
+            const circlePos = {
+              x: Math.cos(circleRad) * circleRadius,
+              y: Math.sin(circleRad) * circleRadius - 80,
+              rotation: circleAngle + 90
+            };
+            const baseRadius = Math.min(containerSize.width, containerSize.height * 1.5);
+            const arcRadius = baseRadius * (isMobile ? 1.4 : 1.1);
+            const arcApexY = containerSize.height * (isMobile ? 0.35 : 0.25);
+            const arcCenterY = arcApexY + arcRadius;
+            const spreadAngle = isMobile ? 100 : 130;
+            const startAngle = -90 - spreadAngle / 2;
+            const step = spreadAngle / (TOTAL_IMAGES - 1);
+            const scrollProgress = Math.min(Math.max(rotateValue / 360, 0), 1);
+            const maxRotation = spreadAngle * 0.8;
+            const boundedRotation = -scrollProgress * maxRotation;
+            const currentArcAngle = startAngle + i * step + boundedRotation;
+            const arcRad = currentArcAngle * Math.PI / 180;
+            const arcPos = {
+              x: Math.cos(arcRad) * arcRadius + parallaxValue,
+              y: Math.sin(arcRad) * arcRadius + arcCenterY,
+              rotation: currentArcAngle + 90,
+              scale: isMobile ? 1.4 : 1.8
+            };
+            target = {
+              x: lerp(circlePos.x, arcPos.x, morphValue),
+              y: lerp(circlePos.y, arcPos.y, morphValue),
+              rotation: lerp(circlePos.rotation, arcPos.rotation, morphValue),
+              scale: lerp(1, arcPos.scale, morphValue),
+              opacity: 1
+            };
+          }
+          return /* @__PURE__ */ jsxRuntimeExports.jsx(FlipCard, { src, index: i, phase: introPhase, target, T }, i);
+        }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 pointer-events-none z-10 flex flex-col items-center justify-center px-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
           motion.div,
           {
-            initial: { scale: 0.8, opacity: 0 },
-            animate: { scale: 1, opacity: 1 },
-            transition: { type: "spring", damping: 20, stiffness: 200 },
-            className: "flex items-center gap-3 mb-2",
+            style: { opacity: contentOpacity },
+            className: "flex flex-col items-center w-full max-w-2xl pointer-events-auto",
             children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center mb-8", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  motion.div,
+                  {
+                    initial: { scale: 0.8, opacity: 0 },
+                    animate: { scale: 1, opacity: 1 },
+                    transition: { type: "spring", damping: 20, stiffness: 200 },
+                    className: "flex items-center gap-3 mb-2",
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "div",
+                        {
+                          className: "w-10 h-10 rounded-xl flex items-center justify-center shadow-lg",
+                          style: {
+                            background: isPrivacyMode ? "linear-gradient(135deg, #f59e0b, #d97706)" : "linear-gradient(135deg, #3b82f6, #2563eb)"
+                          },
+                          children: /* @__PURE__ */ jsxRuntimeExports.jsx(Sparkles, { className: "w-5 h-5 text-white" })
+                        }
+                      ),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "h1",
+                        {
+                          className: "text-3xl font-bold tracking-tight",
+                          style: { color: T.text, textShadow: `0 4px 20px ${T.bg}` },
+                          children: "Sparx"
+                        }
+                      )
+                    ]
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  "p",
+                  {
+                    style: {
+                      color: T.textMuted,
+                      fontSize: 14,
+                      fontWeight: 500,
+                      textShadow: `0 2px 10px ${T.bg}`
+                    },
+                    children: [
+                      greeting,
+                      ". Ready to build?"
+                    ]
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
                 "div",
                 {
-                  className: "w-10 h-10 rounded-xl flex items-center justify-center shadow-lg",
+                  className: `w-full relative rounded-2xl overflow-hidden transition-all duration-300 ease-out mb-10 ${isSearchFocused ? "shadow-2xl scale-[1.02]" : "shadow-lg scale-100"}`,
                   style: {
-                    background: isPrivacyMode ? "linear-gradient(135deg, #f59e0b, #d97706)" : "linear-gradient(135deg, #3b82f6, #2563eb)"
+                    background: `${T.surface}ee`,
+                    backdropFilter: "blur(20px)",
+                    border: `1px solid ${isSearchFocused ? T.accent : T.border}`
                   },
-                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(Sparkles, { className: "w-5 h-5 text-white" })
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-y-0 left-5 flex items-center pointer-events-none", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      Search,
+                      {
+                        className: "w-5 h-5 transition-colors duration-300",
+                        style: { color: isSearchFocused ? T.accent : T.textMuted }
+                      }
+                    ) }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "input",
+                      {
+                        type: "text",
+                        autoFocus: true,
+                        value: query,
+                        onFocus: () => setIsSearchFocused(true),
+                        onBlur: () => setIsSearchFocused(false),
+                        onChange: (e) => setQuery(e.target.value),
+                        onKeyDown: (e) => {
+                          if (e.key === "Enter" && query) onNavigate(query);
+                        },
+                        placeholder: "Search the web, or enter a URL...",
+                        className: "w-full py-4 pl-14 pr-16 text-base outline-none bg-transparent",
+                        style: { color: T.text }
+                      }
+                    ),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: query && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      motion.button,
+                      {
+                        initial: { opacity: 0, scale: 0.8, rotate: -10 },
+                        animate: { opacity: 1, scale: 1, rotate: 0 },
+                        exit: { opacity: 0, scale: 0.8 },
+                        onClick: () => onNavigate(query),
+                        className: "absolute inset-y-2 right-2 px-4 rounded-xl flex items-center justify-center transition-transform hover:scale-105 active:scale-95",
+                        style: { background: T.accentDim, color: T.accent },
+                        children: /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowRight, { className: "w-5 h-5" })
+                      }
+                    ) })
+                  ]
                 }
               ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-3xl font-bold tracking-tight", style: { color: T.text, textShadow: `0 4px 20px ${T.bg}` }, children: "Sparx" })
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center justify-center gap-4 w-full", children: [
+                shortcuts.map((sc, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  motion.button,
+                  {
+                    whileHover: { y: -5, scale: 1.05 },
+                    whileTap: { scale: 0.95 },
+                    onClick: () => onNavigate(sc.url),
+                    className: "flex flex-col items-center gap-2 p-2 rounded-xl cursor-pointer group",
+                    style: { minWidth: 80 },
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "div",
+                        {
+                          className: "w-12 h-12 rounded-xl flex items-center justify-center shadow-sm border transition-shadow group-hover:shadow-md",
+                          style: { backgroundColor: sc.bg, borderColor: T.border },
+                          children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                            sc.icon,
+                            {
+                              className: "w-6 h-6 transition-transform group-hover:scale-110",
+                              style: { color: sc.color }
+                            }
+                          )
+                        }
+                      ),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { color: T.textMuted, fontSize: 11, fontWeight: 500 }, children: sc.name })
+                    ]
+                  },
+                  i
+                )),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  motion.button,
+                  {
+                    whileHover: { y: -5, scale: 1.05 },
+                    whileTap: { scale: 0.95 },
+                    className: "flex flex-col items-center gap-2 p-2 rounded-xl cursor-pointer group",
+                    style: { minWidth: 80 },
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "div",
+                        {
+                          className: "w-12 h-12 rounded-xl flex items-center justify-center shadow-sm border border-dashed transition-colors hover:bg-black/5",
+                          style: { borderColor: T.border },
+                          children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                            Plus,
+                            {
+                              className: "w-6 h-6 transition-transform group-hover:rotate-90",
+                              style: { color: T.textMuted }
+                            }
+                          )
+                        }
+                      ),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { color: T.textMuted, fontSize: 11, fontWeight: 500 }, children: "Add" })
+                    ]
+                  }
+                )
+              ] }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "p",
+                {
+                  className: "mt-12 text-[10px] font-bold tracking-[0.2em] uppercase",
+                  style: { color: T.textDim },
+                  children: "SCROLL DOWN TO INTERACT"
+                }
+              )
             ]
           }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { style: { color: T.textMuted, fontSize: 14, fontWeight: 500, textShadow: `0 2px 10px ${T.bg}` }, children: [
-          greeting,
-          ". Ready to build?"
-        ] })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "div",
-        {
-          className: `w-full relative rounded-2xl overflow-hidden transition-all duration-300 ease-out mb-10 ${isSearchFocused ? "shadow-2xl scale-[1.02]" : "shadow-lg scale-100"}`,
-          style: { background: `${T.surface}ee`, backdropFilter: "blur(20px)", border: `1px solid ${isSearchFocused ? T.accent : T.border}` },
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-y-0 left-5 flex items-center pointer-events-none", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Search, { className: "w-5 h-5 transition-colors duration-300", style: { color: isSearchFocused ? T.accent : T.textMuted } }) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "input",
-              {
-                type: "text",
-                autoFocus: true,
-                value: query,
-                onFocus: () => setIsSearchFocused(true),
-                onBlur: () => setIsSearchFocused(false),
-                onChange: (e) => setQuery(e.target.value),
-                onKeyDown: (e) => {
-                  if (e.key === "Enter" && query) onNavigate(query);
-                },
-                placeholder: "Search the web, or enter a URL...",
-                className: "w-full py-4 pl-14 pr-16 text-base outline-none bg-transparent",
-                style: { color: T.text }
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: query && /* @__PURE__ */ jsxRuntimeExports.jsx(
-              motion.button,
-              {
-                initial: { opacity: 0, scale: 0.8, rotate: -10 },
-                animate: { opacity: 1, scale: 1, rotate: 0 },
-                exit: { opacity: 0, scale: 0.8 },
-                onClick: () => onNavigate(query),
-                className: "absolute inset-y-2 right-2 px-4 rounded-xl flex items-center justify-center transition-transform hover:scale-105 active:scale-95",
-                style: { background: T.accentDim, color: T.accent },
-                children: /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowRight, { className: "w-5 h-5" })
-              }
-            ) })
-          ]
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center justify-center gap-4 w-full", children: [
-        shortcuts.map((sc, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          motion.button,
-          {
-            whileHover: { y: -5, scale: 1.05 },
-            whileTap: { scale: 0.95 },
-            onClick: () => onNavigate(sc.url),
-            className: "flex flex-col items-center gap-2 p-2 rounded-xl cursor-pointer group",
-            style: { minWidth: 80 },
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "div",
-                {
-                  className: "w-12 h-12 rounded-xl flex items-center justify-center shadow-sm border transition-shadow group-hover:shadow-md",
-                  style: { backgroundColor: sc.bg, borderColor: T.border },
-                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(sc.icon, { className: "w-6 h-6 transition-transform group-hover:scale-110", style: { color: sc.color } })
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { color: T.textMuted, fontSize: 11, fontWeight: 500 }, children: sc.name })
-            ]
-          },
-          i
-        )),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          motion.button,
-          {
-            whileHover: { y: -5, scale: 1.05 },
-            whileTap: { scale: 0.95 },
-            className: "flex flex-col items-center gap-2 p-2 rounded-xl cursor-pointer group",
-            style: { minWidth: 80 },
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "div",
-                {
-                  className: "w-12 h-12 rounded-xl flex items-center justify-center shadow-sm border border-dashed transition-colors hover:bg-black/5",
-                  style: { borderColor: T.border },
-                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, { className: "w-6 h-6 transition-transform group-hover:rotate-90", style: { color: T.textMuted } })
-                }
-              ),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { color: T.textMuted, fontSize: 11, fontWeight: 500 }, children: "Add" })
-            ]
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-12 text-[10px] font-bold tracking-[0.2em] uppercase", style: { color: T.textDim }, children: "SCROLL DOWN TO INTERACT" })
-    ] }) })
-  ] });
-}
+        ) })
+      ]
+    }
+  );
+});
 const StatusDot = ({ isPrivacy }) => /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "relative flex h-2 w-2", children: [
-  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isPrivacy ? "bg-amber-400" : "bg-blue-400"}` }),
-  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `relative inline-flex rounded-full h-2 w-2 ${isPrivacy ? "bg-amber-500" : "bg-blue-500"}` })
+  /* @__PURE__ */ jsxRuntimeExports.jsx(
+    "span",
+    {
+      className: `animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isPrivacy ? "bg-amber-400" : "bg-blue-400"}`
+    }
+  ),
+  /* @__PURE__ */ jsxRuntimeExports.jsx(
+    "span",
+    {
+      className: `relative inline-flex rounded-full h-2 w-2 ${isPrivacy ? "bg-amber-500" : "bg-blue-500"}`
+    }
+  )
 ] });
-const TypingIndicator = ({ color: color2 }) => /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-1 px-4 py-3", children: [0, 1, 2].map((i) => /* @__PURE__ */ jsxRuntimeExports.jsx(motion.span, { className: "block w-1.5 h-1.5 rounded-full", style: { backgroundColor: color2 }, animate: { y: [0, -5, 0] }, transition: { duration: 0.7, repeat: Infinity, delay: i * 0.15 } }, i)) });
 function App() {
   const { user, isAuthLoading, login, signup, logout } = useAuth();
   const {
@@ -73771,7 +74159,9 @@ function App() {
   reactExports.useEffect(() => {
     localStorage.setItem("sparx_dev_mode", JSON.stringify(isDeveloperMode));
   }, [isDeveloperMode]);
-  const [isDark, setIsDark] = reactExports.useState(() => window.matchMedia("(prefers-color-scheme: dark)").matches);
+  const [isDark, setIsDark] = reactExports.useState(
+    () => window.matchMedia("(prefers-color-scheme: dark)").matches
+  );
   reactExports.useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
     const handleChange = (e) => setIsDark(e.matches);
@@ -73798,14 +74188,25 @@ function App() {
     handleWipeMemory
   } = useChat(activeTabId, tabs, isDeveloperMode);
   const safeNotes = Array.isArray(notes) ? notes : [];
-  const { cloudStatus } = useCloudSync(user, bookmarks, history, safeNotes, setBookmarks, setHistory, setNotes || (() => {
-  }), isPrivacyMode);
+  const { cloudStatus } = useCloudSync(
+    user,
+    bookmarks,
+    history,
+    safeNotes,
+    setBookmarks,
+    setHistory,
+    setNotes || (() => {
+    }),
+    isPrivacyMode
+  );
   const [authMode, setAuthMode] = reactExports.useState("login");
   const [email, setEmail] = reactExports.useState("");
   const [password, setPassword] = reactExports.useState("");
   const [authError, setAuthError] = reactExports.useState("");
   const [isChatOpen, setIsChatOpen] = reactExports.useState(true);
-  const [activePanel, setActivePanel] = reactExports.useState("chat");
+  const [activePanel, setActivePanel] = reactExports.useState(
+    "chat"
+  );
   const [showCommandPalette, setShowCommandPalette] = reactExports.useState(false);
   const [commandQuery, setCommandQuery] = reactExports.useState("");
   const [isSettingsOpen, setIsSettingsOpen] = reactExports.useState(false);
@@ -73924,34 +74325,82 @@ function App() {
   };
   const slashCommands = reactExports.useMemo(() => {
     const base = [
-      { cmd: "/agent", label: "Autonomous Agent", icon: Bot, text: "Assign a complex multi-step task for Sparx to execute." },
-      { cmd: "/remember", label: "Memorize Page", icon: Brain, text: "Save the current webpage to your permanent Vector AI Memory." },
-      { cmd: "/research", label: "Deep Research Mode", icon: Search, text: "Type /research [topic] for a comprehensive AI report." },
-      { cmd: "/compare", label: "Compare All Tabs", icon: Columns2, text: "Synthesize and compare the content across all open tabs." },
-      { cmd: "/summarize", label: "Summarize Page", icon: FileText, text: "Provide a concise 3-5 bullet point summary of the current page." },
-      { cmd: "/explain", label: "Explain Concepts", icon: Zap, text: "Explain the main concepts or complex paragraphs on this page simply." },
-      { cmd: "/translate", label: "Translate Page", icon: Globe, text: "Translate the main content of this webpage into English." }
+      {
+        cmd: "/agent",
+        label: "Autonomous Agent",
+        icon: Bot,
+        text: "Assign a complex multi-step task for Sparx to execute."
+      },
+      {
+        cmd: "/remember",
+        label: "Memorize Page",
+        icon: Brain,
+        text: "Save the current webpage to your permanent Vector AI Memory."
+      },
+      {
+        cmd: "/research",
+        label: "Deep Research Mode",
+        icon: Search,
+        text: "Type /research [topic] for a comprehensive AI report."
+      },
+      {
+        cmd: "/compare",
+        label: "Compare All Tabs",
+        icon: Columns2,
+        text: "Synthesize and compare the content across all open tabs."
+      },
+      {
+        cmd: "/summarize",
+        label: "Summarize Page",
+        icon: FileText,
+        text: "Provide a concise 3-5 bullet point summary of the current page."
+      },
+      {
+        cmd: "/explain",
+        label: "Explain Concepts",
+        icon: Zap,
+        text: "Explain the main concepts or complex paragraphs on this page simply."
+      },
+      {
+        cmd: "/translate",
+        label: "Translate Page",
+        icon: Globe,
+        text: "Translate the main content of this webpage into English."
+      }
     ];
     if (isDeveloperMode) {
       base.unshift(
-        { cmd: "/debug", label: "Debug Code", icon: Bug, text: "Find and fix bugs in the current page or snippet." },
-        { cmd: "/refactor", label: "Refactor Code", icon: Terminal, text: "Optimize and clean up the current code." }
+        {
+          cmd: "/debug",
+          label: "Debug Code",
+          icon: Bug,
+          text: "Find and fix bugs in the current page or snippet."
+        },
+        {
+          cmd: "/refactor",
+          label: "Refactor Code",
+          icon: Terminal,
+          text: "Optimize and clean up the current code."
+        }
       );
     }
     return base;
   }, [isDeveloperMode]);
   const filteredSlashCommands = currentMessage.startsWith("/") ? slashCommands.filter((c2) => c2.cmd.includes(currentMessage.toLowerCase())) : [];
-  const quickPrompts = reactExports.useMemo(() => isDeveloperMode ? [
-    { icon: Bot, label: "Agent", text: "/agent " },
-    { icon: Terminal, label: "Refactor", text: "/refactor " },
-    { icon: Columns2, label: "Compare", text: "/compare" },
-    { icon: Search, label: "Research", text: "/research " }
-  ] : [
-    { icon: Bot, label: "Run Agent", text: "/agent " },
-    { icon: Columns2, label: "Compare Tabs", text: "/compare" },
-    { icon: FileText, label: "Summarize", text: "/summarize" },
-    { icon: Search, label: "Deep Research", text: "/research " }
-  ], [isDeveloperMode]);
+  const quickPrompts = reactExports.useMemo(
+    () => isDeveloperMode ? [
+      { icon: Bot, label: "Agent", text: "/agent " },
+      { icon: Terminal, label: "Refactor", text: "/refactor " },
+      { icon: Columns2, label: "Compare", text: "/compare" },
+      { icon: Search, label: "Research", text: "/research " }
+    ] : [
+      { icon: Bot, label: "Run Agent", text: "/agent " },
+      { icon: Columns2, label: "Compare Tabs", text: "/compare" },
+      { icon: FileText, label: "Summarize", text: "/summarize" },
+      { icon: Search, label: "Deep Research", text: "/research " }
+    ],
+    [isDeveloperMode]
+  );
   const handleAuthSubmit = async (e) => {
     e.preventDefault();
     setAuthError("");
@@ -74016,428 +74465,1433 @@ function App() {
       };
     }
   }, [isDark, isPrivacyMode]);
-  if (isAuthLoading) return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-screen w-full flex flex-col items-center justify-center text-gray-900", style: { background: T.bg }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "w-8 h-8 animate-spin", style: { color: T.accent } }) });
+  if (isAuthLoading)
+    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "div",
+      {
+        className: "h-screen w-full flex flex-col items-center justify-center text-gray-900",
+        style: { background: T.bg },
+        children: /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "w-8 h-8 animate-spin", style: { color: T.accent } })
+      }
+    );
   if (!user) {
-    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative h-screen w-full overflow-hidden flex items-center justify-center font-sans antialiased", style: { background: T.bg, color: T.text }, children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(motion.div, { animate: { scale: [1, 1.1, 1], opacity: [0.4, 0.6, 0.4] }, transition: { duration: 15, repeat: Infinity, ease: "easeInOut" }, className: "absolute -top-[20%] -left-[10%] w-[60vw] h-[60vw] rounded-full blur-[140px]", style: { background: `radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, rgba(255,255,255,0) 70%)` } }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(motion.div, { animate: { scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }, transition: { duration: 20, repeat: Infinity, ease: "easeInOut", delay: 2 }, className: "absolute top-[30%] -right-[15%] w-[50vw] h-[50vw] rounded-full blur-[120px]", style: { background: `radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, rgba(255,255,255,0) 70%)` } }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(motion.div, { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 }, className: "z-10 w-full max-w-md p-8 rounded-2xl border flex flex-col items-center", style: { background: T.surface, borderColor: T.border, boxShadow: T.shadow }, children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-14 h-14 rounded-xl flex items-center justify-center mb-6 shadow-md cursor-pointer", style: { background: "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)" }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Sparkles, { className: "text-white w-7 h-7" }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-2xl font-semibold mb-2 tracking-tight", children: "Welcome to Sparx" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm mb-8 text-center", style: { color: T.textMuted }, children: "Sign in to sync your AI intelligence and browsing history." }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit: handleAuthSubmit, className: "w-full flex flex-col gap-4", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("input", { type: "email", placeholder: "Email", value: email, onChange: (e) => setEmail(e.target.value), required: true, className: "w-full border rounded-lg py-3 px-4 text-sm outline-none transition-colors", style: { background: T.inputBg, borderColor: T.border, color: T.text } }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("input", { type: "password", placeholder: "Password", value: password, onChange: (e) => setPassword(e.target.value), required: true, className: "w-full border rounded-lg py-3 px-4 text-sm outline-none transition-colors", style: { background: T.inputBg, borderColor: T.border, color: T.text } }),
-          authError && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-red-500 text-xs text-center", children: authError }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("button", { type: "submit", className: "w-full py-3 rounded-lg font-medium shadow-md hover:scale-[1.02] transition-transform", style: { background: "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)", color: "white" }, children: authMode === "login" ? "Sign In" : "Create Account" })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => setAuthMode(authMode === "login" ? "signup" : "login"), className: "mt-6 text-sm font-medium transition-colors", style: { color: T.accent }, children: authMode === "login" ? "Don't have an account? Sign Up" : "Already have an account? Sign In" })
-      ] })
-    ] });
-  }
-  const cssVars = { "--bg": T.bg, "--surface": T.surface, "--border": T.border, "--text": T.text, "--text-muted": T.textMuted, "--accent": T.accent, "--accent-dim": T.accentDim };
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { ...cssVars, background: T.bg, color: T.text, fontFamily: '"DM Sans", system-ui, sans-serif' }, className: "h-screen w-full overflow-hidden flex flex-col select-none", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("style", { children: `@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap'); * { box-sizing: border-box; } ::-webkit-scrollbar { width: 4px; height: 4px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: ${T.border}; border-radius: 99px; } ::-webkit-scrollbar-thumb:hover { background: ${T.textMuted}; } .no-scrollbar::-webkit-scrollbar { display: none; } .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; } .proto-badge { font-family: 'DM Mono', monospace; } .tab-strip-shadow { box-shadow: inset 0 -1px 0 ${T.border}; } .frosted { backdrop-filter: blur(20px) saturate(180%); } @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } } .suggestion-item { animation: fadeSlideIn 0.15s ease forwards; }` }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { background: T.sidebarBg, borderBottom: `1px solid ${T.border}` }, className: "flex items-end h-11 px-2 gap-0.5 shrink-0 pt-2 frosted", children: [
-      [...tabs.filter((t) => t.pinned), ...tabs.filter((t) => !t.pinned)].map((tab2) => /* @__PURE__ */ jsxRuntimeExports.jsxs(motion.div, { layout: true, initial: { opacity: 0, scaleX: 0.85 }, animate: { opacity: 1, scaleX: 1 }, exit: { opacity: 0, scaleX: 0.85 }, onClick: () => handleSwitchTab(tab2), className: "group relative flex items-center gap-2 cursor-pointer", style: { minWidth: tab2.pinned ? 40 : 120, maxWidth: tab2.pinned ? 40 : 220, height: 36, padding: tab2.pinned ? "0 10px" : "0 12px", borderRadius: "8px 8px 0 0", background: activeTabId === tab2.id ? T.surface : "transparent", borderTop: activeTabId === tab2.id ? `1px solid ${T.border}` : "1px solid transparent", borderLeft: activeTabId === tab2.id ? `1px solid ${T.border}` : "1px solid transparent", borderRight: activeTabId === tab2.id ? `1px solid ${T.border}` : "1px solid transparent", borderBottom: activeTabId === tab2.id ? `1px solid ${T.surface}` : "none", marginBottom: activeTabId === tab2.id ? -1 : 0 }, children: [
-        tab2.favicon ? /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: tab2.favicon, className: "w-4 h-4 shrink-0 rounded", alt: "", onError: (e) => e.currentTarget.style.display = "none" }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Globe, { style: { color: T.textMuted }, className: "w-3.5 h-3.5 shrink-0" }),
-        !tab2.pinned && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { color: activeTabId === tab2.id ? T.text : T.textMuted, fontSize: 12, fontWeight: 500 }, className: "truncate flex-1", children: tab2.isLoading ? "Loading…" : tab2.title }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: (e) => handleCloseTab(e, tab2.id), style: { color: T.textMuted, borderRadius: 4 }, className: "opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/5 p-0.5 ml-1", children: /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "w-3 h-3" }) })
-        ] }),
-        activeTabId === tab2.id && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { background: T.surface }, className: "absolute bottom-0 left-0 right-0 h-px" })
-      ] }, tab2.id)),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: handleAddTab, style: { color: T.textMuted, borderRadius: 6 }, className: "flex items-center justify-center w-7 h-7 mb-0.5 hover:bg-black/5 transition-colors ml-1", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, { className: "w-4 h-4" }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1" })
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { background: T.surface, borderBottom: `1px solid ${T.border}` }, className: "h-12 flex items-center px-3 gap-2 shrink-0", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-0.5", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => handleWebviewNav("back"), style: { color: T.textMuted, borderRadius: 6 }, className: "w-8 h-8 flex items-center justify-center hover:bg-black/5 transition-colors", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronLeft, { className: "w-4 h-4" }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => handleWebviewNav("forward"), style: { color: T.textMuted, borderRadius: 6 }, className: "w-8 h-8 flex items-center justify-center hover:bg-black/5 transition-colors", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronRight, { className: "w-4 h-4" }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => handleWebviewNav("reload"), style: { color: T.textMuted, borderRadius: 6 }, className: "w-8 h-8 flex items-center justify-center hover:bg-black/5 transition-colors", children: /* @__PURE__ */ jsxRuntimeExports.jsx(RotateCw, { className: "w-4 h-4" }) })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => handleNavigate("sparx://newtab"), style: { color: T.textMuted, borderRadius: 6 }, className: "w-8 h-8 flex items-center justify-center hover:bg-black/5 transition-colors", children: /* @__PURE__ */ jsxRuntimeExports.jsx(House, { className: "w-4 h-4" }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 flex items-center gap-2 h-8 px-3 rounded-full transition-all", style: { background: T.urlBg, border: `1px solid ${isUrlFocused ? T.urlFocusBorder : T.border}`, boxShadow: isUrlFocused ? `0 0 0 3px ${T.accentDim}` : "none" }, children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5 shrink-0", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { title: isPrivacyMode ? "Privacy Mode Active" : "", children: isPrivacyMode ? /* @__PURE__ */ jsxRuntimeExports.jsx(EyeOff, { className: "w-3.5 h-3.5", style: { color: T.accent } }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Shield, { className: "w-3.5 h-3.5", style: { color: inputUrl.startsWith("https") ? "#10b981" : T.textMuted } }) }),
-          isDeveloperMode && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { title: "Developer Mode Active", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Terminal, { className: "w-3 h-3 ml-1", style: { color: T.accent } }) })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "input",
-          {
-            ref: urlInputRef,
-            type: "text",
-            value: isUrlFocused ? inputUrl : inputUrl === "sparx://newtab" ? "" : (() => {
-              try {
-                return new URL(inputUrl).hostname.replace("www.", "");
-              } catch {
-                return inputUrl;
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      "div",
+      {
+        className: "relative h-screen w-full overflow-hidden flex items-center justify-center font-sans antialiased",
+        style: { background: T.bg, color: T.text },
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            motion.div,
+            {
+              animate: { scale: [1, 1.1, 1], opacity: [0.4, 0.6, 0.4] },
+              transition: { duration: 15, repeat: Infinity, ease: "easeInOut" },
+              className: "absolute -top-[20%] -left-[10%] w-[60vw] h-[60vw] rounded-full blur-[140px]",
+              style: {
+                background: `radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, rgba(255,255,255,0) 70%)`
               }
-            })(),
-            onChange: (e) => setInputUrl(e.target.value),
-            onFocus: () => {
-              setIsUrlFocused(true);
-              setTimeout(() => urlInputRef.current?.select(), 10);
-            },
-            onBlur: () => setIsUrlFocused(false),
-            onKeyDown: (e) => {
-              if (e.key === "Enter") handleNavigate();
-            },
-            className: "flex-1 bg-transparent outline-none text-sm",
-            style: { color: T.text, fontFamily: isUrlFocused ? '"DM Mono", monospace' : '"DM Sans", sans-serif', fontSize: 13 },
-            placeholder: "Search or enter URL…",
-            spellCheck: false
-          }
-        ),
-        isUrlFocused && /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => handleNavigate(), style: { color: T.accent }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowRight, { className: "w-4 h-4" }) })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: triggerAutoNote, disabled: isAutoNoting || inputUrl === "sparx://newtab", style: { color: isAutoNoting ? T.accent : T.textMuted, borderRadius: 6 }, className: "w-8 h-8 flex items-center justify-center hover:bg-black/5 transition-colors disabled:opacity-50", title: "Extract Auto-Note", children: isAutoNoting ? /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "w-4 h-4 animate-spin" }) : /* @__PURE__ */ jsxRuntimeExports.jsx(WandSparkles, { className: "w-4 h-4" }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: addBookmark, disabled: inputUrl === "sparx://newtab", style: { color: T.textMuted, borderRadius: 6 }, className: "w-8 h-8 flex items-center justify-center hover:bg-black/5 transition-colors disabled:opacity-50", title: "Bookmark", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Bookmark, { className: "w-4 h-4" }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { onClick: () => setShowCommandPalette(true), style: { background: T.accentDim, color: T.accent, border: `1px solid ${T.border}`, borderRadius: 6, fontSize: 11 }, className: "h-7 px-2.5 flex items-center gap-1.5 hover:bg-opacity-80 transition-colors", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Command, { className: "w-3 h-3" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium", children: "K" })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(motion.button, { whileHover: { scale: 1.05 }, whileTap: { scale: 0.95 }, onClick: () => setIsChatOpen((p) => !p), style: { background: isChatOpen ? isPrivacyMode ? "linear-gradient(135deg, #f59e0b, #d97706)" : "linear-gradient(135deg, #3b82f6, #2563eb)" : T.accentDim, color: isChatOpen ? "#fff" : T.accent, borderRadius: 8, border: `1px solid ${isChatOpen ? "transparent" : T.border}` }, className: "h-8 px-3 flex items-center gap-2 text-xs font-semibold transition-all", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Sparkles, { className: "w-3.5 h-3.5" }),
-        "Sparx"
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "w-8 h-8 flex items-center justify-center transition-colors relative group", style: { color: cloudStatus === "synced" ? "#10b981" : cloudStatus === "syncing" ? "#3b82f6" : cloudStatus === "paused" ? "#f59e0b" : "#ef4444" }, children: [
-        cloudStatus === "synced" ? /* @__PURE__ */ jsxRuntimeExports.jsx(Cloud, { className: "w-4 h-4" }) : cloudStatus === "syncing" ? /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "w-4 h-4 animate-spin" }) : cloudStatus === "paused" ? /* @__PURE__ */ jsxRuntimeExports.jsx(CirclePause, { className: "w-4 h-4" }) : /* @__PURE__ */ jsxRuntimeExports.jsx(CloudOff, { className: "w-4 h-4" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-10 right-0 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 shadow-lg", style: { background: T.surfaceHover, color: T.text, border: `1px solid ${T.border}` }, children: cloudStatus === "synced" ? "Data synced to Sparx Cloud" : cloudStatus === "syncing" ? "Syncing..." : cloudStatus === "paused" ? "Cloud Sync Paused (Privacy Mode)" : "Cloud sync disconnected" })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => setIsSettingsOpen(true), style: { color: T.textMuted, borderRadius: 6 }, className: "w-8 h-8 flex items-center justify-center hover:bg-black/5 transition-colors", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Settings, { className: "w-4 h-4" }) })
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-1 overflow-hidden relative", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 relative overflow-hidden", style: { background: T.bg }, children: tabs.map((tab2) => /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 w-full h-full", style: { display: activeTabId === tab2.id ? "flex" : "none" }, children: tab2.url === "sparx://newtab" ? /* @__PURE__ */ jsxRuntimeExports.jsx(ScrollMorphHero, { onNavigate: handleNavigate, T, isPrivacyMode }) : /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "webview",
-        {
-          id: `webview-${tab2.id}`,
-          src: tab2.url,
-          className: "w-full h-full bg-white",
-          allowpopups: "true"
-        }
-      ) }, tab2.id)) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: isChatOpen && /* @__PURE__ */ jsxRuntimeExports.jsxs(motion.aside, { initial: { width: 0, opacity: 0 }, animate: { width: 400, opacity: 1 }, exit: { width: 0, opacity: 0 }, transition: { type: "spring", stiffness: 320, damping: 30 }, style: { background: T.panelBg, borderLeft: `1px solid ${T.border}` }, className: "h-full flex flex-col overflow-hidden shrink-0 shadow-[-10px_0_30px_rgba(0,0,0,0.03)] z-10", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { background: T.surface, borderBottom: `1px solid ${T.border}`, padding: "0 16px" }, className: "h-12 flex items-center gap-3 shrink-0", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-7 h-7 rounded-lg flex items-center justify-center shrink-0", style: { background: isPrivacyMode ? "linear-gradient(135deg, #f59e0b, #d97706)" : "linear-gradient(135deg, #3b82f6, #2563eb)" }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Sparkles, { className: "w-3.5 h-3.5 text-white" }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { color: T.text, fontSize: 14, fontWeight: 600, letterSpacing: "-0.01em" }, children: "Sparx" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { color: isPrivacyMode ? "#f59e0b" : T.textMuted, fontSize: 11, fontWeight: isPrivacyMode ? 600 : 400 }, className: "ml-2", children: isPrivacyMode ? "Stealth Mode" : isDeveloperMode ? "Dev Mode" : "Intelligence" })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(StatusDot, { isPrivacy: isPrivacyMode }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-1", children: [{ id: "chat", icon: MessageSquare }, { id: "workspace", icon: Library }, { id: "bookmarks", icon: Bookmark }, { id: "history", icon: Clock }].map(({ id: id2, icon: Icon2 }) => /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => setActivePanel(id2), style: { color: activePanel === id2 ? T.accent : T.textMuted, background: activePanel === id2 ? T.accentDim : "transparent", borderRadius: 6 }, className: "w-7 h-7 flex items-center justify-center transition-colors hover:bg-black/5", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon2, { className: "w-3.5 h-3.5" }) }, id2)) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => setIsChatOpen(false), style: { color: T.textMuted, borderRadius: 6 }, className: "w-7 h-7 flex items-center justify-center hover:bg-black/5 transition-colors ml-1", children: /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "w-4 h-4" }) })
-        ] }),
-        activePanel === "chat" && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 overflow-y-auto p-4 space-y-4 no-scrollbar", children: [
-            chatHistory.map((msg, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs(motion.div, { initial: { opacity: 0, y: 12 }, animate: { opacity: 1, y: 0 }, transition: { delay: Math.min(i * 0.03, 0.3) }, className: `flex ${msg.role === "user" ? "justify-end" : "justify-start"}`, children: [
-              msg.role === "ai" && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-6 h-6 rounded-md flex items-center justify-center shrink-0 mt-1 mr-2", style: { background: isPrivacyMode ? "linear-gradient(135deg, #f59e0b, #d97706)" : "linear-gradient(135deg, #3b82f6, #2563eb)" }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Sparkles, { className: "w-3 h-3 text-white" }) }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "max-w-[82%] rounded-2xl px-4 py-3 text-sm leading-relaxed shadow-sm", style: msg.role === "user" ? { background: T.userBubble, color: "#fff", borderRadius: "16px 4px 16px 16px" } : { background: T.aiBubble, border: `1px solid ${T.aiBubbleBorder}`, color: T.text, borderRadius: "4px 16px 16px 16px" }, children: msg.role === "user" ? /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "whitespace-pre-wrap", style: { fontSize: 13 }, children: msg.content }) : msg.content === "" ? /* @__PURE__ */ jsxRuntimeExports.jsx(TypingIndicator, { color: isPrivacyMode ? "#f59e0b" : "#3b82f6" }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { fontSize: 13 }, children: [
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            motion.div,
+            {
+              animate: { scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] },
+              transition: { duration: 20, repeat: Infinity, ease: "easeInOut", delay: 2 },
+              className: "absolute top-[30%] -right-[15%] w-[50vw] h-[50vw] rounded-full blur-[120px]",
+              style: {
+                background: `radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, rgba(255,255,255,0) 70%)`
+              }
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            motion.div,
+            {
+              initial: { opacity: 0, y: 20 },
+              animate: { opacity: 1, y: 0 },
+              className: "z-10 w-full max-w-md p-8 rounded-2xl border flex flex-col items-center",
+              style: { background: T.surface, borderColor: T.border, boxShadow: T.shadow },
+              children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
-                  Markdown,
+                  "div",
                   {
-                    components: {
-                      h1: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { style: { color: T.text, fontWeight: 700, fontSize: 16, marginBottom: 8 }, children }),
-                      h2: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { style: { color: T.text, fontWeight: 600, fontSize: 14, marginBottom: 6 }, children }),
-                      h3: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { style: { color: T.text, fontWeight: 600, fontSize: 13, marginBottom: 4 }, children }),
-                      p: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx("p", { style: { marginBottom: 8, lineHeight: 1.6 }, children }),
-                      ul: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { style: { paddingLeft: 16, marginBottom: 8, listStyle: "disc" }, children }),
-                      ol: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx("ol", { style: { paddingLeft: 16, marginBottom: 8, listStyle: "decimal" }, children }),
-                      li: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx("li", { style: { marginBottom: 3, lineHeight: 1.5 }, children }),
-                      strong: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { style: { color: T.text, fontWeight: 600 }, children }),
-                      a: ({ href, children }) => /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href, style: { color: T.accent, textDecoration: "underline", textUnderlineOffset: 2 }, children }),
-                      code({ node: node2, inline, className, children, ...props }) {
-                        const match = /language-(\w+)/.exec(className || "");
-                        const codeText2 = String(children).replace(/\n$/, "");
-                        return !inline && match ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative group/code my-3 shadow-sm", style: { borderRadius: 10, overflow: "hidden", border: `1px solid ${T.border}` }, children: [
-                          /* @__PURE__ */ jsxRuntimeExports.jsx(highlighter, { ...props, style: vs, language: match[1], PreTag: "div", customStyle: { margin: 0, fontSize: 12, fontFamily: '"DM Mono", monospace', background: T.surface }, children: codeText2 }),
-                          /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => copyToClipboard(codeText2), className: "absolute top-2 right-2 opacity-0 group-hover/code:opacity-100 transition-opacity", style: { background: "rgba(0,0,0,0.05)", border: "1px solid rgba(0,0,0,0.1)", borderRadius: 6, padding: "4px 6px" }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Copy, { className: "w-3 h-3 text-gray-500" }) })
-                        ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("code", { style: { background: T.accentDim, color: T.accent, padding: "1px 6px", borderRadius: 4, fontFamily: '"DM Mono", monospace', fontSize: 12 }, children });
-                      }
-                    },
-                    children: msg.content || " "
+                    className: "w-14 h-14 rounded-xl flex items-center justify-center mb-6 shadow-md cursor-pointer",
+                    style: { background: "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)" },
+                    children: /* @__PURE__ */ jsxRuntimeExports.jsx(Sparkles, { className: "text-white w-7 h-7" })
                   }
                 ),
-                msg.content && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3 mt-3 pt-2 border-t", style: { borderColor: T.border }, children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { onClick: () => copyToClipboard(msg.content), className: "flex items-center gap-1.5 transition-colors hover:text-blue-500", style: { color: T.textMuted, fontSize: 11 }, children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx(Copy, { className: "w-3 h-3" }),
-                    " Copy"
-                  ] }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { onClick: () => handleSaveToWorkspace(msg.content), className: "flex items-center gap-1.5 transition-colors hover:text-blue-500", style: { color: T.textMuted, fontSize: 11 }, children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx(Library, { className: "w-3 h-3" }),
-                    " Save to Workspace"
-                  ] })
-                ] })
-              ] }) })
-            ] }, i)),
-            isTyping && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", style: { color: T.textMuted, fontSize: 12 }, children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "w-3.5 h-3.5 animate-spin" }),
-              " Thinking…"
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { ref: lastMessageRef })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { borderTop: `1px solid ${T.border}`, padding: "10px 12px", background: T.surface }, className: "flex gap-2 overflow-x-auto no-scrollbar shrink-0", children: quickPrompts.map((p, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs(motion.button, { whileHover: { scale: 1.03 }, whileTap: { scale: 0.97 }, onClick: () => handleSendMessage(p.text), disabled: isTyping, style: { background: T.accentDim, border: `1px solid ${T.border}`, color: T.text, borderRadius: 20, fontSize: 11, fontWeight: 500, whiteSpace: "nowrap", padding: "6px 12px" }, className: "flex items-center gap-1.5 transition-all disabled:opacity-50 shrink-0", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(p.icon, { className: "w-3 h-3", style: { color: T.accent } }),
-            p.label
-          ] }, i)) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { style: { borderTop: `1px solid ${T.border}`, padding: "12px 14px", background: T.surface }, className: "shrink-0 relative", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: currentMessage.startsWith("/") && filteredSlashCommands.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs(motion.div, { initial: { opacity: 0, y: 10 }, animate: { opacity: 1, y: 0 }, exit: { opacity: 0, y: 10 }, className: "absolute bottom-full left-4 right-4 mb-2 rounded-xl overflow-hidden shadow-lg border z-50", style: { background: T.surface, borderColor: T.border }, children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "px-4 py-2 text-[10px] font-bold uppercase tracking-wider", style: { color: T.textMuted, background: T.surfaceHover }, children: isDeveloperMode ? "Developer Commands" : "Page Commands" }),
-              filteredSlashCommands.map((sc, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { onClick: () => {
-                setCurrentMessage("");
-                handleSendMessage(sc.text);
-              }, className: "w-full flex items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-black/5", style: { color: T.text, borderBottom: i < filteredSlashCommands.length - 1 ? `1px solid ${T.border}` : "none" }, children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-6 h-6 rounded flex items-center justify-center shrink-0", style: { background: T.accentDim, color: T.accent }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(sc.icon, { className: "w-3.5 h-3.5" }) }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 min-w-0", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm font-semibold", style: { color: T.accent }, children: sc.cmd }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "truncate", style: { color: T.textMuted, fontSize: 11 }, children: sc.label })
-                ] })
-              ] }, i))
-            ] }) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: pdfName && /* @__PURE__ */ jsxRuntimeExports.jsxs(motion.div, { initial: { height: 0, opacity: 0 }, animate: { height: "auto", opacity: 1 }, exit: { height: 0, opacity: 0 }, className: "flex items-center justify-between mb-3 px-3 py-2 rounded-lg", style: { background: T.accentDim, border: `1px solid ${T.border}` }, children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", style: { color: T.accent, fontSize: 12 }, children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(FileText, { className: "w-3.5 h-3.5" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium truncate", children: pdfName })
-              ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => {
-                setPdfName("");
-                setUploadedPdfText("");
-              }, style: { color: T.textMuted }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "w-3.5 h-3.5" }) })
-            ] }) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative flex items-end gap-2 rounded-xl px-3 py-2 z-10 shadow-sm transition-shadow focus-within:shadow-md", style: { background: T.inputBg, border: `1px solid ${T.border}` }, children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("input", { type: "file", ref: fileInputRef, onChange: (e) => handleFileUpload(e.target.files?.[0]), accept: ".pdf", className: "hidden" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => fileInputRef.current?.click(), disabled: isTyping || isUploading, style: { color: T.textMuted }, className: "p-1 transition-colors mt-1 hover:text-blue-500", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Paperclip, { className: "w-4 h-4" }) }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("textarea", { value: currentMessage, onChange: (e) => setCurrentMessage(e.target.value), onKeyDown: (e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSendMessage();
-                }
-              }, placeholder: pdfName ? "Ask about your document…" : 'Type "/" for commands...', disabled: isTyping || isUploading, rows: 1, className: "flex-1 bg-transparent outline-none resize-none", style: { color: T.text, fontSize: 13, lineHeight: "1.5", minHeight: 24, maxHeight: 120, caretColor: T.accent } }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => handleSendMessage(), disabled: isTyping || isUploading || !currentMessage.trim(), className: "p-2 rounded-lg transition-all disabled:opacity-40 hover:scale-105 active:scale-95 shrink-0 shadow-sm", style: { background: isPrivacyMode ? "linear-gradient(135deg, #f59e0b, #d97706)" : "linear-gradient(135deg, #3b82f6, #2563eb)", color: "#fff" }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowRight, { className: "w-3.5 h-3.5" }) })
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between mt-2 px-1", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { color: T.textMuted, fontSize: 10 }, children: "Enter to send · Shift+Enter for newline" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { onClick: clearChat, style: { color: T.textMuted, fontSize: 10 }, className: "flex items-center gap-1 hover:text-red-500 transition-colors", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "w-3 h-3" }),
-                " Clear"
-              ] })
-            ] })
-          ] })
-        ] }),
-        activePanel === "workspace" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 overflow-y-auto p-4", style: { background: T.bg }, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between mb-6", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { color: T.textMuted, fontSize: 11, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase" }, children: "Knowledge Workspace" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "px-2 py-0.5 rounded text-[10px] font-bold border", style: { background: T.accentDim, color: T.accent, borderColor: T.accent }, children: isPrivacyMode ? "Local Only" : "Auto-Synced" })
-          ] }),
-          safeNotes.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center justify-center h-40 text-center px-4 border border-dashed rounded-xl", style: { borderColor: T.border, background: T.surface }, children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Library, { className: "w-8 h-8 mb-3 opacity-20", style: { color: T.text } }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { style: { color: T.text, fontSize: 13, fontWeight: 500 }, children: "Your workspace is empty." }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { style: { color: T.textMuted, fontSize: 12, marginTop: 4 }, children: 'Ask the AI to research a topic, then click "Save to Workspace" on the message.' })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-3", children: safeNotes.map((note) => /* @__PURE__ */ jsxRuntimeExports.jsxs(motion.div, { initial: { opacity: 0, y: 10 }, animate: { opacity: 1, y: 0 }, className: "p-4 rounded-xl border relative group shadow-sm", style: { background: T.surface, borderColor: T.border }, children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => {
-              if (setNotes) setNotes((p) => {
-                const arr = Array.isArray(p) ? p : [];
-                return arr.filter((n) => n.id !== note.id);
-              });
-            }, className: "absolute top-3 right-3 p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500/10 text-red-500", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "w-4 h-4" }) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-semibold mb-2 pr-8", style: { color: T.text, fontSize: 15 }, children: note.title || "Untitled" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm opacity-80", style: { color: T.textDim, fontSize: 11, marginBottom: 12 }, children: new Date(note.timestamp || Date.now()).toLocaleString() }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "max-h-40 overflow-y-auto no-scrollbar rounded-lg p-3 text-sm", style: { background: T.bg, border: `1px solid ${T.borderMuted}`, color: T.text }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(
-              Markdown,
-              {
-                components: {
-                  h1: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { style: { fontWeight: 600, fontSize: 14, marginBottom: 4 }, children }),
-                  h2: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { style: { fontWeight: 600, fontSize: 13, marginBottom: 4 }, children }),
-                  p: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx("p", { style: { marginBottom: 6, lineHeight: 1.5 }, children }),
-                  ul: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { style: { paddingLeft: 16, marginBottom: 6, listStyle: "disc" }, children }),
-                  li: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx("li", { style: { marginBottom: 2 }, children })
+                /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-2xl font-semibold mb-2 tracking-tight", children: "Welcome to Sparx" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm mb-8 text-center", style: { color: T.textMuted }, children: "Sign in to sync your AI intelligence and browsing history." }),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit: handleAuthSubmit, className: "w-full flex flex-col gap-4", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "input",
+                    {
+                      type: "email",
+                      placeholder: "Email",
+                      value: email,
+                      onChange: (e) => setEmail(e.target.value),
+                      required: true,
+                      className: "w-full border rounded-lg py-3 px-4 text-sm outline-none transition-colors",
+                      style: { background: T.inputBg, borderColor: T.border, color: T.text }
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "input",
+                    {
+                      type: "password",
+                      placeholder: "Password",
+                      value: password,
+                      onChange: (e) => setPassword(e.target.value),
+                      required: true,
+                      className: "w-full border rounded-lg py-3 px-4 text-sm outline-none transition-colors",
+                      style: { background: T.inputBg, borderColor: T.border, color: T.text }
+                    }
+                  ),
+                  authError && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-red-500 text-xs text-center", children: authError }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "button",
+                    {
+                      type: "submit",
+                      className: "w-full py-3 rounded-lg font-medium shadow-md hover:scale-[1.02] transition-transform",
+                      style: {
+                        background: "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)",
+                        color: "white"
+                      },
+                      children: authMode === "login" ? "Sign In" : "Create Account"
+                    }
+                  )
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "button",
+                  {
+                    onClick: () => setAuthMode(authMode === "login" ? "signup" : "login"),
+                    className: "mt-6 text-sm font-medium transition-colors",
+                    style: { color: T.accent },
+                    children: authMode === "login" ? "Don't have an account? Sign Up" : "Already have an account? Sign In"
+                  }
+                )
+              ]
+            }
+          )
+        ]
+      }
+    );
+  }
+  const cssVars = {
+    "--bg": T.bg,
+    "--surface": T.surface,
+    "--border": T.border,
+    "--text": T.text,
+    "--text-muted": T.textMuted,
+    "--accent": T.accent,
+    "--accent-dim": T.accentDim
+  };
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+    "div",
+    {
+      style: {
+        ...cssVars,
+        background: T.bg,
+        color: T.text,
+        fontFamily: '"DM Sans", system-ui, sans-serif'
+      },
+      className: "h-screen w-full overflow-hidden flex flex-col select-none",
+      children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("style", { children: `@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap'); * { box-sizing: border-box; } ::-webkit-scrollbar { width: 4px; height: 4px; } ::-webkit-scrollbar-track { background: transparent; } ::-webkit-scrollbar-thumb { background: ${T.border}; border-radius: 99px; } ::-webkit-scrollbar-thumb:hover { background: ${T.textMuted}; } .no-scrollbar::-webkit-scrollbar { display: none; } .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; } .proto-badge { font-family: 'DM Mono', monospace; } .tab-strip-shadow { box-shadow: inset 0 -1px 0 ${T.border}; } .frosted { backdrop-filter: blur(20px) saturate(180%); } @keyframes fadeSlideIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } } .suggestion-item { animation: fadeSlideIn 0.15s ease forwards; }` }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "div",
+          {
+            style: { background: T.sidebarBg, borderBottom: `1px solid ${T.border}` },
+            className: "flex items-end h-11 px-2 gap-0.5 shrink-0 pt-2 frosted",
+            children: [
+              [...tabs.filter((t) => t.pinned), ...tabs.filter((t) => !t.pinned)].map((tab2) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                motion.div,
+                {
+                  layout: true,
+                  initial: { opacity: 0, scaleX: 0.85 },
+                  animate: { opacity: 1, scaleX: 1 },
+                  exit: { opacity: 0, scaleX: 0.85 },
+                  onClick: () => handleSwitchTab(tab2),
+                  className: "group relative flex items-center gap-2 cursor-pointer",
+                  style: {
+                    minWidth: tab2.pinned ? 40 : 120,
+                    maxWidth: tab2.pinned ? 40 : 220,
+                    height: 36,
+                    padding: tab2.pinned ? "0 10px" : "0 12px",
+                    borderRadius: "8px 8px 0 0",
+                    background: activeTabId === tab2.id ? T.surface : "transparent",
+                    borderTop: activeTabId === tab2.id ? `1px solid ${T.border}` : "1px solid transparent",
+                    borderLeft: activeTabId === tab2.id ? `1px solid ${T.border}` : "1px solid transparent",
+                    borderRight: activeTabId === tab2.id ? `1px solid ${T.border}` : "1px solid transparent",
+                    borderBottom: activeTabId === tab2.id ? `1px solid ${T.surface}` : "none",
+                    marginBottom: activeTabId === tab2.id ? -1 : 0
+                  },
+                  children: [
+                    tab2.favicon ? /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "img",
+                      {
+                        src: tab2.favicon,
+                        className: "w-4 h-4 shrink-0 rounded",
+                        alt: "",
+                        onError: (e) => e.currentTarget.style.display = "none"
+                      }
+                    ) : /* @__PURE__ */ jsxRuntimeExports.jsx(Globe, { style: { color: T.textMuted }, className: "w-3.5 h-3.5 shrink-0" }),
+                    !tab2.pinned && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "span",
+                        {
+                          style: {
+                            color: activeTabId === tab2.id ? T.text : T.textMuted,
+                            fontSize: 12,
+                            fontWeight: 500
+                          },
+                          className: "truncate flex-1",
+                          children: tab2.isLoading ? "Loading…" : tab2.title
+                        }
+                      ),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "button",
+                        {
+                          onClick: (e) => handleCloseTab(e, tab2.id),
+                          style: { color: T.textMuted, borderRadius: 4 },
+                          className: "opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/5 p-0.5 ml-1",
+                          children: /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "w-3 h-3" })
+                        }
+                      )
+                    ] }),
+                    activeTabId === tab2.id && /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "div",
+                      {
+                        style: { background: T.surface },
+                        className: "absolute bottom-0 left-0 right-0 h-px"
+                      }
+                    )
+                  ]
                 },
-                children: note.content || " "
-              }
-            ) })
-          ] }, note.id)) })
-        ] }),
-        activePanel === "bookmarks" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 overflow-y-auto p-4", style: { background: T.bg }, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { color: T.textMuted, fontSize: 11, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 12 }, children: "Bookmarks" }),
-          bookmarks.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { style: { color: T.textMuted, fontSize: 13 }, children: "No bookmarks yet." }),
-          bookmarks.map((b, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { onClick: () => {
-            handleNavigate(b.url);
-            setActivePanel("chat");
-          }, className: "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-left mb-1", style: { color: T.text, fontSize: 13 }, onMouseEnter: (e) => e.currentTarget.style.background = T.surfaceHover, onMouseLeave: (e) => e.currentTarget.style.background = "transparent", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Globe, { style: { color: T.textMuted }, className: "w-4 h-4 shrink-0" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 min-w-0", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-medium truncate", children: b.title }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { color: T.textMuted, fontSize: 11 }, className: "truncate", children: b.url })
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(ExternalLink, { style: { color: T.textMuted }, className: "w-3 h-3 shrink-0" })
-          ] }, i))
-        ] }),
-        activePanel === "history" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 overflow-y-auto p-4", style: { background: T.bg }, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { color: T.textMuted, fontSize: 11, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: 12 }, children: "Recent History" }),
-          history.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { style: { color: T.textMuted, fontSize: 13 }, children: isPrivacyMode ? "History is paused." : "No history yet." }),
-          history.map((h2, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { onClick: () => handleNavigate(h2.url), className: "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-left mb-1", style: { color: T.text, fontSize: 13 }, onMouseEnter: (e) => e.currentTarget.style.background = T.surfaceHover, onMouseLeave: (e) => e.currentTarget.style.background = "transparent", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Clock, { style: { color: T.textMuted }, className: "w-4 h-4 shrink-0" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 min-w-0", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-medium truncate", children: h2.title }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { color: T.textMuted, fontSize: 11 }, className: "truncate", children: h2.url })
-            ] })
-          ] }, i))
-        ] })
-      ] }) })
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: showCommandPalette && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(motion.div, { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, onClick: () => setShowCommandPalette(false), className: "fixed inset-0 z-40", style: { background: "rgba(0,0,0,0.4)", backdropFilter: "blur(4px)" } }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(motion.div, { initial: { opacity: 0, scale: 0.95, y: -20 }, animate: { opacity: 1, scale: 1, y: 0 }, exit: { opacity: 0, scale: 0.95, y: -20 }, transition: { type: "spring", stiffness: 400, damping: 28 }, className: "fixed top-[20%] left-1/2 -translate-x-1/2 z-50 w-[600px] rounded-2xl overflow-hidden", style: { background: T.surface, border: `1px solid ${T.border}`, boxShadow: T.shadow }, children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3 px-5 py-4", style: { borderBottom: `1px solid ${T.border}` }, children: [
-          commandQuery.toLowerCase().startsWith("open ") ? /* @__PURE__ */ jsxRuntimeExports.jsx(Globe, { className: "w-4 h-4 shrink-0 text-blue-500" }) : commandQuery.toLowerCase().startsWith("search ") ? /* @__PURE__ */ jsxRuntimeExports.jsx(Search, { className: "w-4 h-4 shrink-0 text-green-500" }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Command, { className: "w-4 h-4 shrink-0", style: { color: T.accent } }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("input", { ref: commandInputRef, type: "text", value: commandQuery, onChange: (e) => setCommandQuery(e.target.value), onKeyDown: (e) => {
-            if (e.key === "Escape") setShowCommandPalette(false);
-            if (e.key === "Enter" && commandQuery) executeCommand(commandQuery);
-          }, placeholder: "Type a command (e.g., 'open youtube', '/agent', 'workspace')", className: "flex-1 bg-transparent outline-none text-base font-medium", style: { color: T.text } }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("kbd", { style: { background: T.surfaceHover, color: T.textMuted, border: `1px solid ${T.border}`, borderRadius: 5, padding: "2px 6px", fontSize: 10 }, children: "ESC" })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "py-2 max-h-[360px] overflow-y-auto", style: { background: T.bg }, children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { color: T.textMuted, fontSize: 10, fontWeight: 600, letterSpacing: "0.06em", textTransform: "uppercase", padding: "8px 20px 4px" }, children: "Suggestions" }),
-          isDeveloperMode && (commandQuery === "" || "debug".includes(commandQuery.toLowerCase())) && /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { onClick: () => executeCommand("debug"), className: "w-full flex items-center gap-3 px-5 py-3 transition-colors text-left suggestion-item", onMouseEnter: (e) => e.currentTarget.style.background = T.surfaceHover, onMouseLeave: (e) => e.currentTarget.style.background = "transparent", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Bug, { className: "w-4 h-4 shrink-0 text-red-500" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { color: T.text, fontSize: 13 }, children: "Debug current page code" })
-          ] }),
-          isDeveloperMode && (commandQuery === "" || "refactor".includes(commandQuery.toLowerCase())) && /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { onClick: () => executeCommand("refactor"), className: "w-full flex items-center gap-3 px-5 py-3 transition-colors text-left suggestion-item", onMouseEnter: (e) => e.currentTarget.style.background = T.surfaceHover, onMouseLeave: (e) => e.currentTarget.style.background = "transparent", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Terminal, { className: "w-4 h-4 shrink-0 text-green-500" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { color: T.text, fontSize: 13 }, children: "Refactor current page code" })
-          ] }),
-          (commandQuery === "" || "agent".includes(commandQuery.toLowerCase())) && /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { onClick: () => executeCommand("agent "), className: "w-full flex items-center gap-3 px-5 py-3 transition-colors text-left suggestion-item", onMouseEnter: (e) => e.currentTarget.style.background = T.surfaceHover, onMouseLeave: (e) => e.currentTarget.style.background = "transparent", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Bot, { className: "w-4 h-4 shrink-0 text-blue-500" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { color: T.text, fontSize: 13 }, children: "Launch Autonomous Agent..." })
-          ] }),
-          (commandQuery === "" || "extract".includes(commandQuery.toLowerCase()) || "note".includes(commandQuery.toLowerCase())) && /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { onClick: () => executeCommand("auto note"), className: "w-full flex items-center gap-3 px-5 py-3 transition-colors text-left suggestion-item", onMouseEnter: (e) => e.currentTarget.style.background = T.surfaceHover, onMouseLeave: (e) => e.currentTarget.style.background = "transparent", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(WandSparkles, { className: "w-4 h-4 shrink-0 text-yellow-500" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { color: T.text, fontSize: 13 }, children: "Auto-Extract page to Workspace" })
-          ] }),
-          (commandQuery === "" || "workspace".includes(commandQuery.toLowerCase())) && /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { onClick: () => executeCommand("workspace"), className: "w-full flex items-center gap-3 px-5 py-3 transition-colors text-left suggestion-item", onMouseEnter: (e) => e.currentTarget.style.background = T.surfaceHover, onMouseLeave: (e) => e.currentTarget.style.background = "transparent", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Library, { className: "w-4 h-4 shrink-0 text-purple-500" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { color: T.text, fontSize: 13 }, children: "Open Knowledge Workspace" })
-          ] }),
-          (commandQuery === "" || "compare".includes(commandQuery.toLowerCase())) && /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { onClick: () => executeCommand("compare"), className: "w-full flex items-center gap-3 px-5 py-3 transition-colors text-left suggestion-item", onMouseEnter: (e) => e.currentTarget.style.background = T.surfaceHover, onMouseLeave: (e) => e.currentTarget.style.background = "transparent", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Columns2, { className: "w-4 h-4 shrink-0 text-pink-500" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { color: T.text, fontSize: 13 }, children: "Compare all open tabs" })
-          ] }),
-          (commandQuery === "" || "summarize".includes(commandQuery.toLowerCase())) && /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { onClick: () => executeCommand("summarize"), className: "w-full flex items-center gap-3 px-5 py-3 transition-colors text-left suggestion-item", onMouseEnter: (e) => e.currentTarget.style.background = T.surfaceHover, onMouseLeave: (e) => e.currentTarget.style.background = "transparent", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Sparkles, { className: "w-4 h-4 shrink-0", style: { color: T.accent } }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { color: T.text, fontSize: 13 }, children: "Summarize current page" })
-          ] }),
-          commandQuery.toLowerCase().startsWith("open ") && commandQuery.length > 5 && /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { onClick: () => executeCommand(commandQuery), className: "w-full flex items-center gap-3 px-5 py-3 transition-colors text-left suggestion-item", onMouseEnter: (e) => e.currentTarget.style.background = T.surfaceHover, onMouseLeave: (e) => e.currentTarget.style.background = "transparent", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Globe, { className: "w-4 h-4 shrink-0 text-blue-500" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { style: { color: T.text, fontSize: 13 }, children: [
-              "Go to ",
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { children: [
-                commandQuery.replace("open ", ""),
-                ".com"
-              ] })
-            ] })
-          ] }),
-          commandQuery.toLowerCase().startsWith("search ") && commandQuery.length > 7 && /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { onClick: () => executeCommand(commandQuery), className: "w-full flex items-center gap-3 px-5 py-3 transition-colors text-left suggestion-item", onMouseEnter: (e) => e.currentTarget.style.background = T.surfaceHover, onMouseLeave: (e) => e.currentTarget.style.background = "transparent", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Search, { className: "w-4 h-4 shrink-0 text-green-500" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { style: { color: T.text, fontSize: 13 }, children: [
-              "Search Google for ",
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { children: [
-                '"',
-                commandQuery.replace("search ", ""),
-                '"'
-              ] })
-            ] })
-          ] }),
-          (commandQuery === "" || "bookmark".includes(commandQuery.toLowerCase())) && /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { onClick: () => executeCommand("bookmark"), className: "w-full flex items-center gap-3 px-5 py-3 transition-colors text-left suggestion-item", onMouseEnter: (e) => e.currentTarget.style.background = T.surfaceHover, onMouseLeave: (e) => e.currentTarget.style.background = "transparent", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Bookmark, { className: "w-4 h-4 shrink-0", style: { color: T.textMuted } }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { color: T.text, fontSize: 13 }, children: "Bookmark this page" })
-          ] }),
-          (commandQuery === "" || "settings".includes(commandQuery.toLowerCase())) && /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { onClick: () => executeCommand("settings"), className: "w-full flex items-center gap-3 px-5 py-3 transition-colors text-left suggestion-item", onMouseEnter: (e) => e.currentTarget.style.background = T.surfaceHover, onMouseLeave: (e) => e.currentTarget.style.background = "transparent", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Settings, { className: "w-4 h-4 shrink-0", style: { color: T.textMuted } }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { color: T.text, fontSize: 13 }, children: "Open Settings" })
-          ] })
-        ] })
-      ] })
-    ] }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: isSettingsOpen && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(motion.div, { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 }, onClick: () => setIsSettingsOpen(false), className: "fixed inset-0 z-50", style: { background: "rgba(0,0,0,0.4)", backdropFilter: "blur(4px)" } }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        motion.div,
-        {
-          initial: { opacity: 0, scale: 0.95 },
-          animate: { opacity: 1, scale: 1 },
-          exit: { opacity: 0, scale: 0.95 },
-          transition: { type: "spring", stiffness: 400, damping: 28 },
-          className: "fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[480px] max-w-[90vw] max-h-[85vh] overflow-y-auto no-scrollbar rounded-2xl p-6 flex flex-col gap-5",
-          style: { background: T.surface, border: `1px solid ${T.border}`, boxShadow: T.shadow },
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between shrink-0", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("h2", { className: "text-xl font-semibold flex items-center gap-2", style: { color: T.text }, children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(Settings, { className: "w-5 h-5", style: { color: T.accent } }),
-                " Sparx Settings"
+                tab2.id
+              )),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "button",
+                {
+                  onClick: handleAddTab,
+                  style: { color: T.textMuted, borderRadius: 6 },
+                  className: "flex items-center justify-center w-7 h-7 mb-0.5 hover:bg-black/5 transition-colors ml-1",
+                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, { className: "w-4 h-4" })
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1" })
+            ]
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "div",
+          {
+            style: { background: T.surface, borderBottom: `1px solid ${T.border}` },
+            className: "h-12 flex items-center px-3 gap-2 shrink-0",
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-0.5", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "button",
+                  {
+                    onClick: () => handleWebviewNav("back"),
+                    style: { color: T.textMuted, borderRadius: 6 },
+                    className: "w-8 h-8 flex items-center justify-center hover:bg-black/5 transition-colors",
+                    children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronLeft, { className: "w-4 h-4" })
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "button",
+                  {
+                    onClick: () => handleWebviewNav("forward"),
+                    style: { color: T.textMuted, borderRadius: 6 },
+                    className: "w-8 h-8 flex items-center justify-center hover:bg-black/5 transition-colors",
+                    children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronRight, { className: "w-4 h-4" })
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "button",
+                  {
+                    onClick: () => handleWebviewNav("reload"),
+                    style: { color: T.textMuted, borderRadius: 6 },
+                    className: "w-8 h-8 flex items-center justify-center hover:bg-black/5 transition-colors",
+                    children: /* @__PURE__ */ jsxRuntimeExports.jsx(RotateCw, { className: "w-4 h-4" })
+                  }
+                )
               ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => setIsSettingsOpen(false), style: { color: T.textMuted }, className: "p-1 hover:bg-black/5 rounded-md transition-colors", children: /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "w-5 h-5" }) })
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-col gap-3 p-4 rounded-xl border shrink-0", style: { borderColor: T.border, background: T.surfaceHover }, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-10 h-10 rounded-full flex items-center justify-center", style: { background: T.accentDim, color: T.accent }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Cloud, { className: "w-5 h-5" }) }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-medium text-sm", style: { color: T.text }, children: "Cloud Account" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { color: T.textMuted, fontSize: 12 }, children: user?.email })
-              ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => {
-                logout();
-                setIsSettingsOpen(false);
-              }, className: "px-3 py-1.5 rounded-lg text-xs font-medium border border-red-500/20 text-red-500 hover:bg-red-500/10 transition-colors bg-transparent", children: "Sign Out" })
-            ] }) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between p-4 rounded-xl border shrink-0", style: { borderColor: T.border, background: isPrivacyMode ? "rgba(245, 158, 11, 0.05)" : T.surfaceHover }, children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `w-10 h-10 rounded-full flex items-center justify-center ${isPrivacyMode ? "bg-amber-500/20 text-amber-500" : "bg-emerald-500/20 text-emerald-500"}`, children: isPrivacyMode ? /* @__PURE__ */ jsxRuntimeExports.jsx(EyeOff, { className: "w-5 h-5" }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Shield, { className: "w-5 h-5" }) }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-medium text-sm", style: { color: T.text }, children: "Privacy Shield (Incognito)" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { color: T.textMuted, fontSize: 12 }, children: isPrivacyMode ? "Active. Sync paused & history disabled." : "Off. Syncing to secure cloud." })
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "button",
+                {
+                  onClick: () => handleNavigate("sparx://newtab"),
+                  style: { color: T.textMuted, borderRadius: 6 },
+                  className: "w-8 h-8 flex items-center justify-center hover:bg-black/5 transition-colors",
+                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(House, { className: "w-4 h-4" })
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "div",
+                {
+                  className: "flex-1 flex items-center gap-2 h-8 px-3 rounded-full transition-all",
+                  style: {
+                    background: T.urlBg,
+                    border: `1px solid ${isUrlFocused ? T.urlFocusBorder : T.border}`,
+                    boxShadow: isUrlFocused ? `0 0 0 3px ${T.accentDim}` : "none"
+                  },
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1.5 shrink-0", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { title: isPrivacyMode ? "Privacy Mode Active" : "", children: isPrivacyMode ? /* @__PURE__ */ jsxRuntimeExports.jsx(EyeOff, { className: "w-3.5 h-3.5", style: { color: T.accent } }) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        Shield,
+                        {
+                          className: "w-3.5 h-3.5",
+                          style: { color: inputUrl.startsWith("https") ? "#10b981" : T.textMuted }
+                        }
+                      ) }),
+                      isDeveloperMode && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { title: "Developer Mode Active", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Terminal, { className: "w-3 h-3 ml-1", style: { color: T.accent } }) })
+                    ] }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "input",
+                      {
+                        ref: urlInputRef,
+                        type: "text",
+                        value: isUrlFocused ? inputUrl : inputUrl === "sparx://newtab" ? "" : (() => {
+                          try {
+                            return new URL(inputUrl).hostname.replace("www.", "");
+                          } catch {
+                            return inputUrl;
+                          }
+                        })(),
+                        onChange: (e) => setInputUrl(e.target.value),
+                        onFocus: () => {
+                          setIsUrlFocused(true);
+                          setTimeout(() => urlInputRef.current?.select(), 10);
+                        },
+                        onBlur: () => setIsUrlFocused(false),
+                        onKeyDown: (e) => {
+                          if (e.key === "Enter") handleNavigate();
+                        },
+                        className: "flex-1 bg-transparent outline-none text-sm",
+                        style: {
+                          color: T.text,
+                          fontFamily: isUrlFocused ? '"DM Mono", monospace' : '"DM Sans", sans-serif',
+                          fontSize: 13
+                        },
+                        placeholder: "Search or enter URL…",
+                        spellCheck: false
+                      }
+                    ),
+                    isUrlFocused && /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => handleNavigate(), style: { color: T.accent }, children: /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowRight, { className: "w-4 h-4" }) })
+                  ]
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "button",
+                {
+                  onClick: triggerAutoNote,
+                  disabled: isAutoNoting || inputUrl === "sparx://newtab",
+                  style: { color: isAutoNoting ? T.accent : T.textMuted, borderRadius: 6 },
+                  className: "w-8 h-8 flex items-center justify-center hover:bg-black/5 transition-colors disabled:opacity-50",
+                  title: "Extract Auto-Note",
+                  children: isAutoNoting ? /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "w-4 h-4 animate-spin" }) : /* @__PURE__ */ jsxRuntimeExports.jsx(WandSparkles, { className: "w-4 h-4" })
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "button",
+                {
+                  onClick: addBookmark,
+                  disabled: inputUrl === "sparx://newtab",
+                  style: { color: T.textMuted, borderRadius: 6 },
+                  className: "w-8 h-8 flex items-center justify-center hover:bg-black/5 transition-colors disabled:opacity-50",
+                  title: "Bookmark",
+                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(Bookmark, { className: "w-4 h-4" })
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "button",
+                {
+                  onClick: () => setShowCommandPalette(true),
+                  style: {
+                    background: T.accentDim,
+                    color: T.accent,
+                    border: `1px solid ${T.border}`,
+                    borderRadius: 6,
+                    fontSize: 11
+                  },
+                  className: "h-7 px-2.5 flex items-center gap-1.5 hover:bg-opacity-80 transition-colors",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(Command, { className: "w-3 h-3" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium", children: "K" })
+                  ]
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                motion.button,
+                {
+                  whileHover: { scale: 1.05 },
+                  whileTap: { scale: 0.95 },
+                  onClick: () => setIsChatOpen((p) => !p),
+                  style: {
+                    background: isChatOpen ? isPrivacyMode ? "linear-gradient(135deg, #f59e0b, #d97706)" : "linear-gradient(135deg, #3b82f6, #2563eb)" : T.accentDim,
+                    color: isChatOpen ? "#fff" : T.accent,
+                    borderRadius: 8,
+                    border: `1px solid ${isChatOpen ? "transparent" : T.border}`
+                  },
+                  className: "h-8 px-3 flex items-center gap-2 text-xs font-semibold transition-all",
+                  children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(Sparkles, { className: "w-3.5 h-3.5" }),
+                    "Sparx"
+                  ]
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                "div",
+                {
+                  className: "w-8 h-8 flex items-center justify-center transition-colors relative group",
+                  style: {
+                    color: cloudStatus === "synced" ? "#10b981" : cloudStatus === "syncing" ? "#3b82f6" : cloudStatus === "paused" ? "#f59e0b" : "#ef4444"
+                  },
+                  children: [
+                    cloudStatus === "synced" ? /* @__PURE__ */ jsxRuntimeExports.jsx(Cloud, { className: "w-4 h-4" }) : cloudStatus === "syncing" ? /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "w-4 h-4 animate-spin" }) : cloudStatus === "paused" ? /* @__PURE__ */ jsxRuntimeExports.jsx(CirclePause, { className: "w-4 h-4" }) : /* @__PURE__ */ jsxRuntimeExports.jsx(CloudOff, { className: "w-4 h-4" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "div",
+                      {
+                        className: "absolute top-10 right-0 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50 shadow-lg",
+                        style: { background: T.surfaceHover, color: T.text, border: `1px solid ${T.border}` },
+                        children: cloudStatus === "synced" ? "Data synced to Sparx Cloud" : cloudStatus === "syncing" ? "Syncing..." : cloudStatus === "paused" ? "Cloud Sync Paused (Privacy Mode)" : "Cloud sync disconnected"
+                      }
+                    )
+                  ]
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "button",
+                {
+                  onClick: () => setIsSettingsOpen(true),
+                  style: { color: T.textMuted, borderRadius: 6 },
+                  className: "w-8 h-8 flex items-center justify-center hover:bg-black/5 transition-colors",
+                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(Settings, { className: "w-4 h-4" })
+                }
+              )
+            ]
+          }
+        ),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-1 overflow-hidden relative", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 relative overflow-hidden", style: { background: T.bg }, children: tabs.map((tab2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "div",
+            {
+              className: "absolute inset-0 w-full h-full",
+              style: { display: activeTabId === tab2.id ? "flex" : "none" },
+              children: tab2.url === "sparx://newtab" ? /* @__PURE__ */ jsxRuntimeExports.jsx(ScrollMorphHero, { onNavigate: handleNavigate, T, isPrivacyMode }) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "webview",
+                {
+                  id: `webview-${tab2.id}`,
+                  src: tab2.url,
+                  className: "w-full h-full bg-white",
+                  allowpopups: "true"
+                }
+              )
+            },
+            tab2.id
+          )) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: isChatOpen && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            motion.aside,
+            {
+              initial: { width: 0, opacity: 0 },
+              animate: { width: 400, opacity: 1 },
+              exit: { width: 0, opacity: 0 },
+              transition: { type: "spring", stiffness: 320, damping: 30 },
+              style: { background: T.panelBg, borderLeft: `1px solid ${T.border}` },
+              className: "h-full flex flex-col overflow-hidden shrink-0 shadow-[-10px_0_30px_rgba(0,0,0,0.03)] z-10",
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  "div",
+                  {
+                    style: {
+                      background: T.surface,
+                      borderBottom: `1px solid ${T.border}`,
+                      padding: "0 16px"
+                    },
+                    className: "h-12 flex items-center gap-3 shrink-0",
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "div",
+                        {
+                          className: "w-7 h-7 rounded-lg flex items-center justify-center shrink-0",
+                          style: {
+                            background: isPrivacyMode ? "linear-gradient(135deg, #f59e0b, #d97706)" : "linear-gradient(135deg, #3b82f6, #2563eb)"
+                          },
+                          children: /* @__PURE__ */ jsxRuntimeExports.jsx(Sparkles, { className: "w-3.5 h-3.5 text-white" })
+                        }
+                      ),
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          "span",
+                          {
+                            style: {
+                              color: T.text,
+                              fontSize: 14,
+                              fontWeight: 600,
+                              letterSpacing: "-0.01em"
+                            },
+                            children: "Sparx"
+                          }
+                        ),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          "span",
+                          {
+                            style: {
+                              color: isPrivacyMode ? "#f59e0b" : T.textMuted,
+                              fontSize: 11,
+                              fontWeight: isPrivacyMode ? 600 : 400
+                            },
+                            className: "ml-2",
+                            children: isPrivacyMode ? "Stealth Mode" : isDeveloperMode ? "Dev Mode" : "Intelligence"
+                          }
+                        )
+                      ] }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(StatusDot, { isPrivacy: isPrivacyMode }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-1", children: [
+                        { id: "chat", icon: MessageSquare },
+                        { id: "workspace", icon: Library },
+                        { id: "bookmarks", icon: Bookmark },
+                        { id: "history", icon: Clock }
+                      ].map(({ id: id2, icon: Icon2 }) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "button",
+                        {
+                          onClick: () => setActivePanel(id2),
+                          style: {
+                            color: activePanel === id2 ? T.accent : T.textMuted,
+                            background: activePanel === id2 ? T.accentDim : "transparent",
+                            borderRadius: 6
+                          },
+                          className: "w-7 h-7 flex items-center justify-center transition-colors hover:bg-black/5",
+                          children: /* @__PURE__ */ jsxRuntimeExports.jsx(Icon2, { className: "w-3.5 h-3.5" })
+                        },
+                        id2
+                      )) }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "button",
+                        {
+                          onClick: () => setIsChatOpen(false),
+                          style: { color: T.textMuted, borderRadius: 6 },
+                          className: "w-7 h-7 flex items-center justify-center hover:bg-black/5 transition-colors ml-1",
+                          children: /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "w-4 h-4" })
+                        }
+                      )
+                    ]
+                  }
+                ),
+                activePanel === "chat" && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 overflow-y-auto p-4 space-y-4 no-scrollbar", children: [
+                    chatHistory.map((msg, i) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      motion.div,
+                      {
+                        initial: { opacity: 0, y: 12 },
+                        animate: { opacity: 1, y: 0 },
+                        transition: { delay: Math.min(i * 0.03, 0.3) },
+                        children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          ChatMessage,
+                          {
+                            msg,
+                            isPrivacyMode,
+                            T,
+                            copyToClipboard,
+                            handleSaveToWorkspace
+                          }
+                        )
+                      },
+                      i
+                    )),
+                    isTyping && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                      "div",
+                      {
+                        className: "flex items-center gap-2",
+                        style: { color: T.textMuted, fontSize: 12 },
+                        children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "w-3.5 h-3.5 animate-spin" }),
+                          " Thinking…"
+                        ]
+                      }
+                    ),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { ref: lastMessageRef })
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "div",
+                    {
+                      style: {
+                        borderTop: `1px solid ${T.border}`,
+                        padding: "10px 12px",
+                        background: T.surface
+                      },
+                      className: "flex gap-2 overflow-x-auto no-scrollbar shrink-0",
+                      children: quickPrompts.map((p, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                        motion.button,
+                        {
+                          whileHover: { scale: 1.03 },
+                          whileTap: { scale: 0.97 },
+                          onClick: () => handleSendMessage(p.text),
+                          disabled: isTyping,
+                          style: {
+                            background: T.accentDim,
+                            border: `1px solid ${T.border}`,
+                            color: T.text,
+                            borderRadius: 20,
+                            fontSize: 11,
+                            fontWeight: 500,
+                            whiteSpace: "nowrap",
+                            padding: "6px 12px"
+                          },
+                          className: "flex items-center gap-1.5 transition-all disabled:opacity-50 shrink-0",
+                          children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsx(p.icon, { className: "w-3 h-3", style: { color: T.accent } }),
+                            p.label
+                          ]
+                        },
+                        i
+                      ))
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    "div",
+                    {
+                      style: {
+                        borderTop: `1px solid ${T.border}`,
+                        padding: "12px 14px",
+                        background: T.surface
+                      },
+                      className: "shrink-0 relative",
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: currentMessage.startsWith("/") && filteredSlashCommands.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                          motion.div,
+                          {
+                            initial: { opacity: 0, y: 10 },
+                            animate: { opacity: 1, y: 0 },
+                            exit: { opacity: 0, y: 10 },
+                            className: "absolute bottom-full left-4 right-4 mb-2 rounded-xl overflow-hidden shadow-lg border z-50",
+                            style: { background: T.surface, borderColor: T.border },
+                            children: [
+                              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                "div",
+                                {
+                                  className: "px-4 py-2 text-[10px] font-bold uppercase tracking-wider",
+                                  style: { color: T.textMuted, background: T.surfaceHover },
+                                  children: isDeveloperMode ? "Developer Commands" : "Page Commands"
+                                }
+                              ),
+                              filteredSlashCommands.map((sc, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                                "button",
+                                {
+                                  onClick: () => {
+                                    setCurrentMessage("");
+                                    handleSendMessage(sc.text);
+                                  },
+                                  className: "w-full flex items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-black/5",
+                                  style: {
+                                    color: T.text,
+                                    borderBottom: i < filteredSlashCommands.length - 1 ? `1px solid ${T.border}` : "none"
+                                  },
+                                  children: [
+                                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                      "div",
+                                      {
+                                        className: "w-6 h-6 rounded flex items-center justify-center shrink-0",
+                                        style: { background: T.accentDim, color: T.accent },
+                                        children: /* @__PURE__ */ jsxRuntimeExports.jsx(sc.icon, { className: "w-3.5 h-3.5" })
+                                      }
+                                    ),
+                                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 min-w-0", children: [
+                                      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-sm font-semibold", style: { color: T.accent }, children: sc.cmd }),
+                                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                        "div",
+                                        {
+                                          className: "truncate",
+                                          style: { color: T.textMuted, fontSize: 11 },
+                                          children: sc.label
+                                        }
+                                      )
+                                    ] })
+                                  ]
+                                },
+                                i
+                              ))
+                            ]
+                          }
+                        ) }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: pdfName && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                          motion.div,
+                          {
+                            initial: { height: 0, opacity: 0 },
+                            animate: { height: "auto", opacity: 1 },
+                            exit: { height: 0, opacity: 0 },
+                            className: "flex items-center justify-between mb-3 px-3 py-2 rounded-lg",
+                            style: { background: T.accentDim, border: `1px solid ${T.border}` },
+                            children: [
+                              /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                                "div",
+                                {
+                                  className: "flex items-center gap-2",
+                                  style: { color: T.accent, fontSize: 12 },
+                                  children: [
+                                    /* @__PURE__ */ jsxRuntimeExports.jsx(FileText, { className: "w-3.5 h-3.5" }),
+                                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-medium truncate", children: pdfName })
+                                  ]
+                                }
+                              ),
+                              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                "button",
+                                {
+                                  onClick: () => {
+                                    setPdfName("");
+                                    setUploadedPdfText("");
+                                  },
+                                  style: { color: T.textMuted },
+                                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "w-3.5 h-3.5" })
+                                }
+                              )
+                            ]
+                          }
+                        ) }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                          "div",
+                          {
+                            className: "relative flex items-end gap-2 rounded-xl px-3 py-2 z-10 shadow-sm transition-shadow focus-within:shadow-md",
+                            style: { background: T.inputBg, border: `1px solid ${T.border}` },
+                            children: [
+                              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                "input",
+                                {
+                                  type: "file",
+                                  ref: fileInputRef,
+                                  onChange: (e) => handleFileUpload(e.target.files?.[0]),
+                                  accept: ".pdf",
+                                  className: "hidden"
+                                }
+                              ),
+                              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                "button",
+                                {
+                                  onClick: () => fileInputRef.current?.click(),
+                                  disabled: isTyping || isUploading,
+                                  style: { color: T.textMuted },
+                                  className: "p-1 transition-colors mt-1 hover:text-blue-500",
+                                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(Paperclip, { className: "w-4 h-4" })
+                                }
+                              ),
+                              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                "textarea",
+                                {
+                                  value: currentMessage,
+                                  onChange: (e) => setCurrentMessage(e.target.value),
+                                  onKeyDown: (e) => {
+                                    if (e.key === "Enter" && !e.shiftKey) {
+                                      e.preventDefault();
+                                      handleSendMessage();
+                                    }
+                                  },
+                                  placeholder: pdfName ? "Ask about your document…" : 'Type "/" for commands...',
+                                  disabled: isTyping || isUploading,
+                                  rows: 1,
+                                  className: "flex-1 bg-transparent outline-none resize-none",
+                                  style: {
+                                    color: T.text,
+                                    fontSize: 13,
+                                    lineHeight: "1.5",
+                                    minHeight: 24,
+                                    maxHeight: 120,
+                                    caretColor: T.accent
+                                  }
+                                }
+                              ),
+                              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                                "button",
+                                {
+                                  onClick: () => handleSendMessage(),
+                                  disabled: isTyping || isUploading || !currentMessage.trim(),
+                                  className: "p-2 rounded-lg transition-all disabled:opacity-40 hover:scale-105 active:scale-95 shrink-0 shadow-sm",
+                                  style: {
+                                    background: isPrivacyMode ? "linear-gradient(135deg, #f59e0b, #d97706)" : "linear-gradient(135deg, #3b82f6, #2563eb)",
+                                    color: "#fff"
+                                  },
+                                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowRight, { className: "w-3.5 h-3.5" })
+                                }
+                              )
+                            ]
+                          }
+                        ),
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between mt-2 px-1", children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { color: T.textMuted, fontSize: 10 }, children: "Enter to send · Shift+Enter for newline" }),
+                          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                            "button",
+                            {
+                              onClick: clearChat,
+                              style: { color: T.textMuted, fontSize: 10 },
+                              className: "flex items-center gap-1 hover:text-red-500 transition-colors",
+                              children: [
+                                /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "w-3 h-3" }),
+                                " Clear"
+                              ]
+                            }
+                          )
+                        ] })
+                      ]
+                    }
+                  )
+                ] }),
+                activePanel === "workspace" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 overflow-y-auto p-4", style: { background: T.bg }, children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between mb-6", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "div",
+                      {
+                        style: {
+                          color: T.textMuted,
+                          fontSize: 11,
+                          fontWeight: 600,
+                          letterSpacing: "0.06em",
+                          textTransform: "uppercase"
+                        },
+                        children: "Knowledge Workspace"
+                      }
+                    ),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "div",
+                      {
+                        className: "px-2 py-0.5 rounded text-[10px] font-bold border",
+                        style: { background: T.accentDim, color: T.accent, borderColor: T.accent },
+                        children: isPrivacyMode ? "Local Only" : "Auto-Synced"
+                      }
+                    )
+                  ] }),
+                  safeNotes.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    "div",
+                    {
+                      className: "flex flex-col items-center justify-center h-40 text-center px-4 border border-dashed rounded-xl",
+                      style: { borderColor: T.border, background: T.surface },
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(Library, { className: "w-8 h-8 mb-3 opacity-20", style: { color: T.text } }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { style: { color: T.text, fontSize: 13, fontWeight: 500 }, children: "Your workspace is empty." }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { style: { color: T.textMuted, fontSize: 12, marginTop: 4 }, children: 'Ask the AI to research a topic, then click "Save to Workspace" on the message.' })
+                      ]
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-3", children: safeNotes.map((note) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    motion.div,
+                    {
+                      initial: { opacity: 0, y: 10 },
+                      animate: { opacity: 1, y: 0 },
+                      className: "p-4 rounded-xl border relative group shadow-sm",
+                      style: { background: T.surface, borderColor: T.border },
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          "button",
+                          {
+                            onClick: () => {
+                              if (setNotes)
+                                setNotes((p) => {
+                                  const arr = Array.isArray(p) ? p : [];
+                                  return arr.filter((n) => n.id !== note.id);
+                                });
+                            },
+                            className: "absolute top-3 right-3 p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500/10 text-red-500",
+                            children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "w-4 h-4" })
+                          }
+                        ),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          "h3",
+                          {
+                            className: "font-semibold mb-2 pr-8",
+                            style: { color: T.text, fontSize: 15 },
+                            children: note.title || "Untitled"
+                          }
+                        ),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          "div",
+                          {
+                            className: "text-sm opacity-80",
+                            style: { color: T.textDim, fontSize: 11, marginBottom: 12 },
+                            children: new Date(note.timestamp || Date.now()).toLocaleString()
+                          }
+                        ),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          "div",
+                          {
+                            className: "max-h-40 overflow-y-auto no-scrollbar rounded-lg p-3 text-sm",
+                            style: {
+                              background: T.bg,
+                              border: `1px solid ${T.borderMuted}`,
+                              color: T.text
+                            },
+                            children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                              Markdown,
+                              {
+                                components: {
+                                  h1: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { style: { fontWeight: 600, fontSize: 14, marginBottom: 4 }, children }),
+                                  h2: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { style: { fontWeight: 600, fontSize: 13, marginBottom: 4 }, children }),
+                                  p: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx("p", { style: { marginBottom: 6, lineHeight: 1.5 }, children }),
+                                  ul: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { style: { paddingLeft: 16, marginBottom: 6, listStyle: "disc" }, children }),
+                                  li: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx("li", { style: { marginBottom: 2 }, children })
+                                },
+                                children: note.content || " "
+                              }
+                            )
+                          }
+                        )
+                      ]
+                    },
+                    note.id
+                  )) })
+                ] }),
+                activePanel === "bookmarks" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 overflow-y-auto p-4", style: { background: T.bg }, children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "div",
+                    {
+                      style: {
+                        color: T.textMuted,
+                        fontSize: 11,
+                        fontWeight: 600,
+                        letterSpacing: "0.06em",
+                        textTransform: "uppercase",
+                        marginBottom: 12
+                      },
+                      children: "Bookmarks"
+                    }
+                  ),
+                  bookmarks.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { style: { color: T.textMuted, fontSize: 13 }, children: "No bookmarks yet." }),
+                  bookmarks.map((b, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    "button",
+                    {
+                      onClick: () => {
+                        handleNavigate(b.url);
+                        setActivePanel("chat");
+                      },
+                      className: "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-left mb-1",
+                      style: { color: T.text, fontSize: 13 },
+                      onMouseEnter: (e) => e.currentTarget.style.background = T.surfaceHover,
+                      onMouseLeave: (e) => e.currentTarget.style.background = "transparent",
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(Globe, { style: { color: T.textMuted }, className: "w-4 h-4 shrink-0" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 min-w-0", children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-medium truncate", children: b.title }),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { color: T.textMuted, fontSize: 11 }, className: "truncate", children: b.url })
+                        ] }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(ExternalLink, { style: { color: T.textMuted }, className: "w-3 h-3 shrink-0" })
+                      ]
+                    },
+                    i
+                  ))
+                ] }),
+                activePanel === "history" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 overflow-y-auto p-4", style: { background: T.bg }, children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "div",
+                    {
+                      style: {
+                        color: T.textMuted,
+                        fontSize: 11,
+                        fontWeight: 600,
+                        letterSpacing: "0.06em",
+                        textTransform: "uppercase",
+                        marginBottom: 12
+                      },
+                      children: "Recent History"
+                    }
+                  ),
+                  history.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { style: { color: T.textMuted, fontSize: 13 }, children: isPrivacyMode ? "History is paused." : "No history yet." }),
+                  history.map((h2, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    "button",
+                    {
+                      onClick: () => handleNavigate(h2.url),
+                      className: "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors text-left mb-1",
+                      style: { color: T.text, fontSize: 13 },
+                      onMouseEnter: (e) => e.currentTarget.style.background = T.surfaceHover,
+                      onMouseLeave: (e) => e.currentTarget.style.background = "transparent",
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(Clock, { style: { color: T.textMuted }, className: "w-4 h-4 shrink-0" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 min-w-0", children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-medium truncate", children: h2.title }),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { color: T.textMuted, fontSize: 11 }, className: "truncate", children: h2.url })
+                        ] })
+                      ]
+                    },
+                    i
+                  ))
                 ] })
-              ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => setIsPrivacyMode(!isPrivacyMode), className: `w-12 h-6 rounded-full relative transition-colors shrink-0 ${isPrivacyMode ? "bg-amber-500" : "bg-gray-400"}`, children: /* @__PURE__ */ jsxRuntimeExports.jsx(motion.div, { layout: true, className: "w-4 h-4 bg-white rounded-full absolute top-1 shadow-sm", style: { left: isPrivacyMode ? "28px" : "4px" } }) })
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between p-4 rounded-xl border shrink-0", style: { borderColor: T.border, background: isDeveloperMode ? "rgba(168, 85, 247, 0.05)" : T.surfaceHover }, children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `w-10 h-10 rounded-full flex items-center justify-center ${isDeveloperMode ? "bg-purple-500/20 text-purple-500" : "bg-gray-500/20 text-gray-500"}`, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Terminal, { className: "w-5 h-5" }) }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-medium text-sm", style: { color: T.text }, children: "Developer Mode" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { color: T.textMuted, fontSize: 12 }, children: "Unlocks code debugging & refactoring." })
+              ]
+            }
+          ) })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: showCommandPalette && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            motion.div,
+            {
+              initial: { opacity: 0 },
+              animate: { opacity: 1 },
+              exit: { opacity: 0 },
+              onClick: () => setShowCommandPalette(false),
+              className: "fixed inset-0 z-40",
+              style: { background: "rgba(0,0,0,0.4)", backdropFilter: "blur(4px)" }
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            motion.div,
+            {
+              initial: { opacity: 0, scale: 0.95, y: -20 },
+              animate: { opacity: 1, scale: 1, y: 0 },
+              exit: { opacity: 0, scale: 0.95, y: -20 },
+              transition: { type: "spring", stiffness: 400, damping: 28 },
+              className: "fixed top-[20%] left-1/2 -translate-x-1/2 z-50 w-[600px] rounded-2xl overflow-hidden",
+              style: {
+                background: T.surface,
+                border: `1px solid ${T.border}`,
+                boxShadow: T.shadow
+              },
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  "div",
+                  {
+                    className: "flex items-center gap-3 px-5 py-4",
+                    style: { borderBottom: `1px solid ${T.border}` },
+                    children: [
+                      commandQuery.toLowerCase().startsWith("open ") ? /* @__PURE__ */ jsxRuntimeExports.jsx(Globe, { className: "w-4 h-4 shrink-0 text-blue-500" }) : commandQuery.toLowerCase().startsWith("search ") ? /* @__PURE__ */ jsxRuntimeExports.jsx(Search, { className: "w-4 h-4 shrink-0 text-green-500" }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Command, { className: "w-4 h-4 shrink-0", style: { color: T.accent } }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "input",
+                        {
+                          ref: commandInputRef,
+                          type: "text",
+                          value: commandQuery,
+                          onChange: (e) => setCommandQuery(e.target.value),
+                          onKeyDown: (e) => {
+                            if (e.key === "Escape") setShowCommandPalette(false);
+                            if (e.key === "Enter" && commandQuery) executeCommand(commandQuery);
+                          },
+                          placeholder: "Type a command (e.g., 'open youtube', '/agent', 'workspace')",
+                          className: "flex-1 bg-transparent outline-none text-base font-medium",
+                          style: { color: T.text }
+                        }
+                      ),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "kbd",
+                        {
+                          style: {
+                            background: T.surfaceHover,
+                            color: T.textMuted,
+                            border: `1px solid ${T.border}`,
+                            borderRadius: 5,
+                            padding: "2px 6px",
+                            fontSize: 10
+                          },
+                          children: "ESC"
+                        }
+                      )
+                    ]
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "py-2 max-h-[360px] overflow-y-auto", style: { background: T.bg }, children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "div",
+                    {
+                      style: {
+                        color: T.textMuted,
+                        fontSize: 10,
+                        fontWeight: 600,
+                        letterSpacing: "0.06em",
+                        textTransform: "uppercase",
+                        padding: "8px 20px 4px"
+                      },
+                      children: "Suggestions"
+                    }
+                  ),
+                  isDeveloperMode && (commandQuery === "" || "debug".includes(commandQuery.toLowerCase())) && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    "button",
+                    {
+                      onClick: () => executeCommand("debug"),
+                      className: "w-full flex items-center gap-3 px-5 py-3 transition-colors text-left suggestion-item",
+                      onMouseEnter: (e) => e.currentTarget.style.background = T.surfaceHover,
+                      onMouseLeave: (e) => e.currentTarget.style.background = "transparent",
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(Bug, { className: "w-4 h-4 shrink-0 text-red-500" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { color: T.text, fontSize: 13 }, children: "Debug current page code" })
+                      ]
+                    }
+                  ),
+                  isDeveloperMode && (commandQuery === "" || "refactor".includes(commandQuery.toLowerCase())) && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    "button",
+                    {
+                      onClick: () => executeCommand("refactor"),
+                      className: "w-full flex items-center gap-3 px-5 py-3 transition-colors text-left suggestion-item",
+                      onMouseEnter: (e) => e.currentTarget.style.background = T.surfaceHover,
+                      onMouseLeave: (e) => e.currentTarget.style.background = "transparent",
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(Terminal, { className: "w-4 h-4 shrink-0 text-green-500" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { color: T.text, fontSize: 13 }, children: "Refactor current page code" })
+                      ]
+                    }
+                  ),
+                  (commandQuery === "" || "agent".includes(commandQuery.toLowerCase())) && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    "button",
+                    {
+                      onClick: () => executeCommand("agent "),
+                      className: "w-full flex items-center gap-3 px-5 py-3 transition-colors text-left suggestion-item",
+                      onMouseEnter: (e) => e.currentTarget.style.background = T.surfaceHover,
+                      onMouseLeave: (e) => e.currentTarget.style.background = "transparent",
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(Bot, { className: "w-4 h-4 shrink-0 text-blue-500" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { color: T.text, fontSize: 13 }, children: "Launch Autonomous Agent..." })
+                      ]
+                    }
+                  ),
+                  (commandQuery === "" || "extract".includes(commandQuery.toLowerCase()) || "note".includes(commandQuery.toLowerCase())) && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    "button",
+                    {
+                      onClick: () => executeCommand("auto note"),
+                      className: "w-full flex items-center gap-3 px-5 py-3 transition-colors text-left suggestion-item",
+                      onMouseEnter: (e) => e.currentTarget.style.background = T.surfaceHover,
+                      onMouseLeave: (e) => e.currentTarget.style.background = "transparent",
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(WandSparkles, { className: "w-4 h-4 shrink-0 text-yellow-500" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { color: T.text, fontSize: 13 }, children: "Auto-Extract page to Workspace" })
+                      ]
+                    }
+                  ),
+                  (commandQuery === "" || "workspace".includes(commandQuery.toLowerCase())) && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    "button",
+                    {
+                      onClick: () => executeCommand("workspace"),
+                      className: "w-full flex items-center gap-3 px-5 py-3 transition-colors text-left suggestion-item",
+                      onMouseEnter: (e) => e.currentTarget.style.background = T.surfaceHover,
+                      onMouseLeave: (e) => e.currentTarget.style.background = "transparent",
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(Library, { className: "w-4 h-4 shrink-0 text-purple-500" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { color: T.text, fontSize: 13 }, children: "Open Knowledge Workspace" })
+                      ]
+                    }
+                  ),
+                  (commandQuery === "" || "compare".includes(commandQuery.toLowerCase())) && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    "button",
+                    {
+                      onClick: () => executeCommand("compare"),
+                      className: "w-full flex items-center gap-3 px-5 py-3 transition-colors text-left suggestion-item",
+                      onMouseEnter: (e) => e.currentTarget.style.background = T.surfaceHover,
+                      onMouseLeave: (e) => e.currentTarget.style.background = "transparent",
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(Columns2, { className: "w-4 h-4 shrink-0 text-pink-500" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { color: T.text, fontSize: 13 }, children: "Compare all open tabs" })
+                      ]
+                    }
+                  ),
+                  (commandQuery === "" || "summarize".includes(commandQuery.toLowerCase())) && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    "button",
+                    {
+                      onClick: () => executeCommand("summarize"),
+                      className: "w-full flex items-center gap-3 px-5 py-3 transition-colors text-left suggestion-item",
+                      onMouseEnter: (e) => e.currentTarget.style.background = T.surfaceHover,
+                      onMouseLeave: (e) => e.currentTarget.style.background = "transparent",
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(Sparkles, { className: "w-4 h-4 shrink-0", style: { color: T.accent } }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { color: T.text, fontSize: 13 }, children: "Summarize current page" })
+                      ]
+                    }
+                  ),
+                  commandQuery.toLowerCase().startsWith("open ") && commandQuery.length > 5 && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    "button",
+                    {
+                      onClick: () => executeCommand(commandQuery),
+                      className: "w-full flex items-center gap-3 px-5 py-3 transition-colors text-left suggestion-item",
+                      onMouseEnter: (e) => e.currentTarget.style.background = T.surfaceHover,
+                      onMouseLeave: (e) => e.currentTarget.style.background = "transparent",
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(Globe, { className: "w-4 h-4 shrink-0 text-blue-500" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { style: { color: T.text, fontSize: 13 }, children: [
+                          "Go to ",
+                          /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { children: [
+                            commandQuery.replace("open ", ""),
+                            ".com"
+                          ] })
+                        ] })
+                      ]
+                    }
+                  ),
+                  commandQuery.toLowerCase().startsWith("search ") && commandQuery.length > 7 && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    "button",
+                    {
+                      onClick: () => executeCommand(commandQuery),
+                      className: "w-full flex items-center gap-3 px-5 py-3 transition-colors text-left suggestion-item",
+                      onMouseEnter: (e) => e.currentTarget.style.background = T.surfaceHover,
+                      onMouseLeave: (e) => e.currentTarget.style.background = "transparent",
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(Search, { className: "w-4 h-4 shrink-0 text-green-500" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { style: { color: T.text, fontSize: 13 }, children: [
+                          "Search Google for ",
+                          /* @__PURE__ */ jsxRuntimeExports.jsxs("strong", { children: [
+                            '"',
+                            commandQuery.replace("search ", ""),
+                            '"'
+                          ] })
+                        ] })
+                      ]
+                    }
+                  ),
+                  (commandQuery === "" || "bookmark".includes(commandQuery.toLowerCase())) && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    "button",
+                    {
+                      onClick: () => executeCommand("bookmark"),
+                      className: "w-full flex items-center gap-3 px-5 py-3 transition-colors text-left suggestion-item",
+                      onMouseEnter: (e) => e.currentTarget.style.background = T.surfaceHover,
+                      onMouseLeave: (e) => e.currentTarget.style.background = "transparent",
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(Bookmark, { className: "w-4 h-4 shrink-0", style: { color: T.textMuted } }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { color: T.text, fontSize: 13 }, children: "Bookmark this page" })
+                      ]
+                    }
+                  ),
+                  (commandQuery === "" || "settings".includes(commandQuery.toLowerCase())) && /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    "button",
+                    {
+                      onClick: () => executeCommand("settings"),
+                      className: "w-full flex items-center gap-3 px-5 py-3 transition-colors text-left suggestion-item",
+                      onMouseEnter: (e) => e.currentTarget.style.background = T.surfaceHover,
+                      onMouseLeave: (e) => e.currentTarget.style.background = "transparent",
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(Settings, { className: "w-4 h-4 shrink-0", style: { color: T.textMuted } }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { color: T.text, fontSize: 13 }, children: "Open Settings" })
+                      ]
+                    }
+                  )
                 ] })
-              ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => setIsDeveloperMode(!isDeveloperMode), className: `w-12 h-6 rounded-full relative transition-colors shrink-0 ${isDeveloperMode ? "bg-purple-500" : "bg-gray-400"}`, children: /* @__PURE__ */ jsxRuntimeExports.jsx(motion.div, { layout: true, className: "w-4 h-4 bg-white rounded-full absolute top-1 shadow-sm", style: { left: isDeveloperMode ? "28px" : "4px" } }) })
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2 pt-2 border-t shrink-0", style: { borderColor: T.border }, children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "text-sm font-medium flex items-center gap-2", style: { color: T.textMuted }, children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(Cpu, { className: "w-4 h-4" }),
-                " AI Engine Model"
-              ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("select", { value: aiModel, onChange: (e) => setAiModel(e.target.value), className: "w-full p-3 rounded-lg text-sm outline-none cursor-pointer appearance-none shadow-sm", style: { background: T.inputBg, border: `1px solid ${T.border}`, color: T.text }, children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "llama3", children: "Meta Llama 3 (8B) - Balanced" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "phi3", children: "Microsoft Phi-3 (3B) - Fast" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "mistral", children: "Mistral (7B) - Coding" })
-              ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { fontSize: 11, color: T.textDim }, children: "*Requires you to download the model locally via `ollama pull [model]`" })
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-2 pt-2 border-t shrink-0 pb-2", style: { borderColor: T.border }, children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "text-sm font-medium flex items-center gap-2", style: { color: T.textMuted }, children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(Database, { className: "w-4 h-4" }),
-                " Vector Database"
-              ] }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { style: { fontSize: 12, color: T.textDim, marginBottom: 8 }, children: "Clear all saved PDFs and documents from Sparx's local ChromaDB memory." }),
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { onClick: onWipeMemoryClick, className: "w-full py-2.5 rounded-lg text-sm font-medium flex items-center justify-center gap-2 text-red-500 border border-red-500/20 hover:bg-red-500/10 transition-colors shrink-0 bg-transparent", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "w-4 h-4" }),
-                " Wipe AI Memory"
-              ] })
-            ] })
-          ]
-        }
-      )
-    ] }) })
-  ] });
+              ]
+            }
+          )
+        ] }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: isSettingsOpen && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            motion.div,
+            {
+              initial: { opacity: 0 },
+              animate: { opacity: 1 },
+              exit: { opacity: 0 },
+              onClick: () => setIsSettingsOpen(false),
+              className: "fixed inset-0 z-50",
+              style: { background: "rgba(0,0,0,0.4)", backdropFilter: "blur(4px)" }
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs(
+            motion.div,
+            {
+              initial: { opacity: 0, scale: 0.95 },
+              animate: { opacity: 1, scale: 1 },
+              exit: { opacity: 0, scale: 0.95 },
+              transition: { type: "spring", stiffness: 400, damping: 28 },
+              className: "fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 w-[480px] max-w-[90vw] max-h-[85vh] overflow-y-auto no-scrollbar rounded-2xl p-6 flex flex-col gap-5",
+              style: {
+                background: T.surface,
+                border: `1px solid ${T.border}`,
+                boxShadow: T.shadow
+              },
+              children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between shrink-0", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                    "h2",
+                    {
+                      className: "text-xl font-semibold flex items-center gap-2",
+                      style: { color: T.text },
+                      children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(Settings, { className: "w-5 h-5", style: { color: T.accent } }),
+                        " Sparx Settings"
+                      ]
+                    }
+                  ),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx(
+                    "button",
+                    {
+                      onClick: () => setIsSettingsOpen(false),
+                      style: { color: T.textMuted },
+                      className: "p-1 hover:bg-black/5 rounded-md transition-colors",
+                      children: /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "w-5 h-5" })
+                    }
+                  )
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(
+                  "div",
+                  {
+                    className: "flex flex-col gap-3 p-4 rounded-xl border shrink-0",
+                    style: { borderColor: T.border, background: T.surfaceHover },
+                    children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "div",
+                        {
+                          className: "w-10 h-10 rounded-full flex items-center justify-center",
+                          style: { background: T.accentDim, color: T.accent },
+                          children: /* @__PURE__ */ jsxRuntimeExports.jsx(Cloud, { className: "w-5 h-5" })
+                        }
+                      ),
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1", children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-medium text-sm", style: { color: T.text }, children: "Cloud Account" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { color: T.textMuted, fontSize: 12 }, children: user?.email })
+                      ] }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "button",
+                        {
+                          onClick: () => {
+                            logout();
+                            setIsSettingsOpen(false);
+                          },
+                          className: "px-3 py-1.5 rounded-lg text-xs font-medium border border-red-500/20 text-red-500 hover:bg-red-500/10 transition-colors bg-transparent",
+                          children: "Sign Out"
+                        }
+                      )
+                    ] })
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  "div",
+                  {
+                    className: "flex items-center justify-between p-4 rounded-xl border shrink-0",
+                    style: {
+                      borderColor: T.border,
+                      background: isPrivacyMode ? "rgba(245, 158, 11, 0.05)" : T.surfaceHover
+                    },
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          "div",
+                          {
+                            className: `w-10 h-10 rounded-full flex items-center justify-center ${isPrivacyMode ? "bg-amber-500/20 text-amber-500" : "bg-emerald-500/20 text-emerald-500"}`,
+                            children: isPrivacyMode ? /* @__PURE__ */ jsxRuntimeExports.jsx(EyeOff, { className: "w-5 h-5" }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Shield, { className: "w-5 h-5" })
+                          }
+                        ),
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1", children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-medium text-sm", style: { color: T.text }, children: "Privacy Shield (Incognito)" }),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { color: T.textMuted, fontSize: 12 }, children: isPrivacyMode ? "Active. Sync paused & history disabled." : "Off. Syncing to secure cloud." })
+                        ] })
+                      ] }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "button",
+                        {
+                          onClick: () => setIsPrivacyMode(!isPrivacyMode),
+                          className: `w-12 h-6 rounded-full relative transition-colors shrink-0 ${isPrivacyMode ? "bg-amber-500" : "bg-gray-400"}`,
+                          children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                            motion.div,
+                            {
+                              layout: true,
+                              className: "w-4 h-4 bg-white rounded-full absolute top-1 shadow-sm",
+                              style: { left: isPrivacyMode ? "28px" : "4px" }
+                            }
+                          )
+                        }
+                      )
+                    ]
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  "div",
+                  {
+                    className: "flex items-center justify-between p-4 rounded-xl border shrink-0",
+                    style: {
+                      borderColor: T.border,
+                      background: isDeveloperMode ? "rgba(168, 85, 247, 0.05)" : T.surfaceHover
+                    },
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
+                        /* @__PURE__ */ jsxRuntimeExports.jsx(
+                          "div",
+                          {
+                            className: `w-10 h-10 rounded-full flex items-center justify-center ${isDeveloperMode ? "bg-purple-500/20 text-purple-500" : "bg-gray-500/20 text-gray-500"}`,
+                            children: /* @__PURE__ */ jsxRuntimeExports.jsx(Terminal, { className: "w-5 h-5" })
+                          }
+                        ),
+                        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1", children: [
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-medium text-sm", style: { color: T.text }, children: "Developer Mode" }),
+                          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { style: { color: T.textMuted, fontSize: 12 }, children: "Unlocks code debugging & refactoring." })
+                        ] })
+                      ] }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx(
+                        "button",
+                        {
+                          onClick: () => setIsDeveloperMode(!isDeveloperMode),
+                          className: `w-12 h-6 rounded-full relative transition-colors shrink-0 ${isDeveloperMode ? "bg-purple-500" : "bg-gray-400"}`,
+                          children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+                            motion.div,
+                            {
+                              layout: true,
+                              className: "w-4 h-4 bg-white rounded-full absolute top-1 shadow-sm",
+                              style: { left: isDeveloperMode ? "28px" : "4px" }
+                            }
+                          )
+                        }
+                      )
+                    ]
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  "div",
+                  {
+                    className: "flex flex-col gap-2 pt-2 border-t shrink-0",
+                    style: { borderColor: T.border },
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                        "label",
+                        {
+                          className: "text-sm font-medium flex items-center gap-2",
+                          style: { color: T.textMuted },
+                          children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsx(Cpu, { className: "w-4 h-4" }),
+                            " AI Engine Model"
+                          ]
+                        }
+                      ),
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                        "select",
+                        {
+                          value: aiModel,
+                          onChange: (e) => setAiModel(e.target.value),
+                          className: "w-full p-3 rounded-lg text-sm outline-none cursor-pointer appearance-none shadow-sm",
+                          style: { background: T.inputBg, border: `1px solid ${T.border}`, color: T.text },
+                          children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "llama3", children: "Meta Llama 3 (8B) - Balanced" }),
+                            /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "phi3", children: "Microsoft Phi-3 (3B) - Fast" }),
+                            /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "mistral", children: "Mistral (7B) - Coding" })
+                          ]
+                        }
+                      ),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { style: { fontSize: 11, color: T.textDim }, children: "*Requires you to download the model locally via `ollama pull [model]`" })
+                    ]
+                  }
+                ),
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  "div",
+                  {
+                    className: "flex flex-col gap-2 pt-2 border-t shrink-0 pb-2",
+                    style: { borderColor: T.border },
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                        "label",
+                        {
+                          className: "text-sm font-medium flex items-center gap-2",
+                          style: { color: T.textMuted },
+                          children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsx(Database, { className: "w-4 h-4" }),
+                            " Vector Database"
+                          ]
+                        }
+                      ),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { style: { fontSize: 12, color: T.textDim, marginBottom: 8 }, children: "Clear all saved PDFs and documents from Sparx's local ChromaDB memory." }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                        "button",
+                        {
+                          onClick: onWipeMemoryClick,
+                          className: "w-full py-2.5 rounded-lg text-sm font-medium flex items-center justify-center gap-2 text-red-500 border border-red-500/20 hover:bg-red-500/10 transition-colors shrink-0 bg-transparent",
+                          children: [
+                            /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "w-4 h-4" }),
+                            " Wipe AI Memory"
+                          ]
+                        }
+                      )
+                    ]
+                  }
+                )
+              ]
+            }
+          )
+        ] }) })
+      ]
+    }
+  );
 }
 clientExports.createRoot(document.getElementById("root")).render(
   /* @__PURE__ */ jsxRuntimeExports.jsx(reactExports.StrictMode, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(App, {}) })
