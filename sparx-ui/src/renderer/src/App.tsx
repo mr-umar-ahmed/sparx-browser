@@ -50,6 +50,78 @@ import { useCloudSync } from './hooks/useCloudSync'
 // Import your custom 3D animated New Tab component!
 import ScrollMorphHero from './components/ui/scroll-morph-hero'
 
+/**
+ * ⚡ Bolt Performance Optimization:
+ * Wrapped Workspace Note in React.memo() to prevent unnecessary re-renders.
+ *
+ * 💡 What: Created a new NoteItem component wrapped in React.memo.
+ * 🎯 Why: The `safeNotes` array is mapped within the App component. Since App contains lots of state (like `currentMessage` for the chat input), typing in the chat input caused every single workspace note (which contains an expensive ReactMarkdown component) to re-render on every keystroke.
+ * 📊 Impact: Prevents all workspace notes from re-rendering when unrelated state in App changes, reducing CPU load and improving input responsiveness.
+ * 🔬 Measurement: Observe the React Profiler while typing in the chat input when the Workspace panel is open. Render times for NoteItem will be 0ms.
+ */
+const NoteItem = React.memo(({ note, T, onDelete }: { note: any, T: any, onDelete: (id: string) => void }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 10 }}
+    animate={{ opacity: 1, y: 0 }}
+    className="p-4 rounded-xl border relative group shadow-sm"
+    style={{ background: T.surface, borderColor: T.border }}
+  >
+    <button
+      onClick={() => onDelete(note.id)}
+      className="absolute top-3 right-3 p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500/10 text-red-500"
+    >
+      <Trash2 className="w-4 h-4" />
+    </button>
+    <h3
+      className="font-semibold mb-2 pr-8"
+      style={{ color: T.text, fontSize: 15 }}
+    >
+      {note.title || 'Untitled'}
+    </h3>
+    <div
+      className="text-sm opacity-80"
+      style={{ color: T.textDim, fontSize: 11, marginBottom: 12 }}
+    >
+      {new Date(note.timestamp || Date.now()).toLocaleString()}
+    </div>
+
+    <div
+      className="max-h-40 overflow-y-auto no-scrollbar rounded-lg p-3 text-sm"
+      style={{
+        background: T.bg,
+        border: `1px solid ${T.borderMuted}`,
+        color: T.text
+      }}
+    >
+      <ReactMarkdown
+        components={{
+          h1: ({ children }) => (
+            <h1 style={{ fontWeight: 600, fontSize: 14, marginBottom: 4 }}>
+              {children}
+            </h1>
+          ),
+          h2: ({ children }) => (
+            <h2 style={{ fontWeight: 600, fontSize: 13, marginBottom: 4 }}>
+              {children}
+            </h2>
+          ),
+          p: ({ children }) => (
+            <p style={{ marginBottom: 6, lineHeight: 1.5 }}>{children}</p>
+          ),
+          ul: ({ children }) => (
+            <ul style={{ paddingLeft: 16, marginBottom: 6, listStyle: 'disc' }}>
+              {children}
+            </ul>
+          ),
+          li: ({ children }) => <li style={{ marginBottom: 2 }}>{children}</li>
+        }}
+      >
+        {note.content || ' '}
+      </ReactMarkdown>
+    </div>
+  </motion.div>
+))
+
 const StatusDot = ({ isPrivacy }: { isPrivacy?: boolean }): ReactElement => (
   <span className="relative flex h-2 w-2">
     <span
@@ -409,6 +481,18 @@ export default function App(): ReactElement {
       console.error('Navigation failed', err)
     }
   }
+
+  const handleDeleteNote = useCallback(
+    (noteId: string) => {
+      if (setNotes) {
+        setNotes((p) => {
+          const arr = Array.isArray(p) ? p : []
+          return arr.filter((n) => n.id !== noteId)
+        })
+      }
+    },
+    [setNotes]
+  )
 
   const handleSaveToWorkspace = useCallback(
     (content: string) => {
@@ -1423,73 +1507,12 @@ export default function App(): ReactElement {
 
                   <div className="space-y-3">
                     {safeNotes.map((note) => (
-                      <motion.div
+                      <NoteItem
                         key={note.id}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="p-4 rounded-xl border relative group shadow-sm"
-                        style={{ background: T.surface, borderColor: T.border }}
-                      >
-                        <button
-                          onClick={() => {
-                            if (setNotes)
-                              setNotes((p) => {
-                                const arr = Array.isArray(p) ? p : []
-                                return arr.filter((n) => n.id !== note.id)
-                              })
-                          }}
-                          className="absolute top-3 right-3 p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500/10 text-red-500"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                        <h3
-                          className="font-semibold mb-2 pr-8"
-                          style={{ color: T.text, fontSize: 15 }}
-                        >
-                          {note.title || 'Untitled'}
-                        </h3>
-                        <div
-                          className="text-sm opacity-80"
-                          style={{ color: T.textDim, fontSize: 11, marginBottom: 12 }}
-                        >
-                          {new Date(note.timestamp || Date.now()).toLocaleString()}
-                        </div>
-
-                        <div
-                          className="max-h-40 overflow-y-auto no-scrollbar rounded-lg p-3 text-sm"
-                          style={{
-                            background: T.bg,
-                            border: `1px solid ${T.borderMuted}`,
-                            color: T.text
-                          }}
-                        >
-                          <ReactMarkdown
-                            components={{
-                              h1: ({ children }) => (
-                                <h1 style={{ fontWeight: 600, fontSize: 14, marginBottom: 4 }}>
-                                  {children}
-                                </h1>
-                              ),
-                              h2: ({ children }) => (
-                                <h2 style={{ fontWeight: 600, fontSize: 13, marginBottom: 4 }}>
-                                  {children}
-                                </h2>
-                              ),
-                              p: ({ children }) => (
-                                <p style={{ marginBottom: 6, lineHeight: 1.5 }}>{children}</p>
-                              ),
-                              ul: ({ children }) => (
-                                <ul style={{ paddingLeft: 16, marginBottom: 6, listStyle: 'disc' }}>
-                                  {children}
-                                </ul>
-                              ),
-                              li: ({ children }) => <li style={{ marginBottom: 2 }}>{children}</li>
-                            }}
-                          >
-                            {note.content || ' '}
-                          </ReactMarkdown>
-                        </div>
-                      </motion.div>
+                        note={note}
+                        T={T}
+                        onDelete={handleDeleteNote}
+                      />
                     ))}
                   </div>
                 </div>
