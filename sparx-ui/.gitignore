@@ -18,3 +18,4 @@ sparx-ai-engine/sparx_memory/
 # OS Files
 .DS_Store
 Thumbs.db
+.eslintcache
