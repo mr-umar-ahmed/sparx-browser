@@ -4,3 +4,7 @@
 ## 2024-05-19 - ReactMarkdown Input Lag in Chat
 **Learning:** Re-rendering a complex map of expensive components (like \`ReactMarkdown\`) due to unrelated state changes (like typing in a Chat \`<textarea>\` connected to a top-level state) causes severe input lag. Every keystroke forces O(N) evaluations of heavy components.
 **Action:** Always memoize repeating heavy components in lists (e.g. \`ChatMessage\` with \`React.memo\`) when they are rendered inside a component that has frequently updating state. Wrap dependencies like \`handleSaveToWorkspace\` in \`useCallback\` and move pure utilities like \`copyToClipboard\` outside the component to keep props stable.
+
+## 2024-05-18 - Concurrent Webview Execution
+**Learning:** Sequential execution of `webview.executeJavaScript` using a `for...of` loop across multiple independent Electron `<webview>` tags introduces a severe O(N) performance bottleneck, especially noticeable during features that aggregate data across tabs (like the `/compare` command).
+**Action:** Always map over the webviews and use `Promise.all` to execute `webview.executeJavaScript` concurrently.
