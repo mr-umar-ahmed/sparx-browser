@@ -46,21 +46,33 @@ export function useChat(activeTabId: string, tabs: Tab[], isDeveloperMode: boole
     }
   }
 
+  /**
+   * ⚡ Bolt Performance Optimization:
+   * Converted sequential loop to Promise.all for concurrent execution.
+   *
+   * 💡 What: Used Promise.all to fetch text from multiple webviews concurrently instead of sequentially.
+   * 🎯 Why: Iterating sequentially across multiple tabs and waiting for each to execute JavaScript creates an O(N) bottleneck.
+   * 📊 Impact: Significantly speeds up the /compare command by doing background execution simultaneously, reducing overall wait time.
+   * 🔬 Measurement: Observe the reduced response time when using the /compare command with many open tabs.
+   */
   const getAllTabsText = async (): Promise<string> => {
-    let combinedText = ''
-    for (const tab of tabs) {
+    const promises = tabs.map(async (tab) => {
       const webview = document.getElementById(`webview-${tab.id}`) as any
       if (webview?.executeJavaScript) {
         try {
           const text = await webview.executeJavaScript('document.body.innerText')
-          if (text)
-            combinedText += `\n\n--- CONTENT FROM TAB: ${tab.title} (${tab.url}) ---\n${text.substring(0, 2500)}`
+          if (text) {
+            return `\n\n--- CONTENT FROM TAB: ${tab.title} (${tab.url}) ---\n${text.substring(0, 2500)}`
+          }
         } catch {
           console.warn(`Could not read tab ${tab.title}`)
         }
       }
-    }
-    return combinedText
+      return ''
+    })
+
+    const results = await Promise.all(promises)
+    return results.join('')
   }
 
   const handleFileUpload = async (file?: File) => {
