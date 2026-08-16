@@ -47,20 +47,25 @@ export function useChat(activeTabId: string, tabs: Tab[], isDeveloperMode: boole
   }
 
   const getAllTabsText = async (): Promise<string> => {
-    let combinedText = ''
-    for (const tab of tabs) {
+    // ⚡ Bolt Performance Optimization:
+    // Concurrently extract text from all webviews using Promise.all instead of sequential execution
+    const promises = tabs.map(async (tab) => {
       const webview = document.getElementById(`webview-${tab.id}`) as any
       if (webview?.executeJavaScript) {
         try {
           const text = await webview.executeJavaScript('document.body.innerText')
-          if (text)
-            combinedText += `\n\n--- CONTENT FROM TAB: ${tab.title} (${tab.url}) ---\n${text.substring(0, 2500)}`
+          if (text) {
+            return `\n\n--- CONTENT FROM TAB: ${tab.title} (${tab.url}) ---\n${text.substring(0, 2500)}`
+          }
         } catch {
           console.warn(`Could not read tab ${tab.title}`)
         }
       }
-    }
-    return combinedText
+      return ''
+    })
+
+    const results = await Promise.all(promises)
+    return results.join('')
   }
 
   const handleFileUpload = async (file?: File) => {
