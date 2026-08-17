@@ -19,7 +19,3 @@ sparx-ai-engine/sparx_memory/
 .DS_Store
 Thumbs.db
 .eslintcache
-
-# Python caching
-__pycache__/
-*.pyc
