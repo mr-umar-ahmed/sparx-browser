@@ -159,7 +159,11 @@ export default function SparxNewTab({
 
         const cached = sessionStorage.getItem(CACHE_KEY)
         if (cached) {
-          const { timestamp, techNews: cachedNews, githubTrending: cachedTrending } = JSON.parse(cached)
+          const {
+            timestamp,
+            techNews: cachedNews,
+            githubTrending: cachedTrending
+          } = JSON.parse(cached)
           if (Date.now() - timestamp < CACHE_TTL) {
             setTechNews(cachedNews)
             setGithubTrending(cachedTrending)
