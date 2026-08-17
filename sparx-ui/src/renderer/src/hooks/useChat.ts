@@ -9,6 +9,10 @@ export interface ChatMessage {
 
 export function useChat(activeTabId: string, tabs: Tab[], isDeveloperMode: boolean) {
   const [aiModel, setAiModel] = useState(() => localStorage.getItem('sparx_model') || 'llama3')
+  const [apiProvider, setApiProvider] = useState(
+    () => localStorage.getItem('sparx_api_provider') || 'ollama'
+  )
+  const [apiKey, setApiKey] = useState(() => localStorage.getItem('sparx_api_key') || '')
   const [currentMessage, setCurrentMessage] = useState('')
   const [isTyping, setIsTyping] = useState(false)
 
@@ -34,6 +38,12 @@ export function useChat(activeTabId: string, tabs: Tab[], isDeveloperMode: boole
   useEffect(() => {
     localStorage.setItem('sparx_model', aiModel)
   }, [aiModel])
+  useEffect(() => {
+    localStorage.setItem('sparx_api_provider', apiProvider)
+  }, [apiProvider])
+  useEffect(() => {
+    localStorage.setItem('sparx_api_key', apiKey)
+  }, [apiKey])
 
   const getActivePageText = async (): Promise<string> => {
     const webview = document.getElementById(`webview-${activeTabId}`) as any
@@ -156,7 +166,13 @@ export function useChat(activeTabId: string, tabs: Tab[], isDeveloperMode: boole
       const res = await fetch('http://127.0.0.1:8000/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: payloadMessage, context: ctx, model: aiModel })
+        body: JSON.stringify({
+          message: payloadMessage,
+          context: ctx,
+          model: aiModel,
+          api_provider: apiProvider,
+          api_key: apiKey
+        })
       })
 
       if (!res.ok || !res.body) throw new Error('Stream failed')
@@ -225,7 +241,13 @@ export function useChat(activeTabId: string, tabs: Tab[], isDeveloperMode: boole
       const res = await fetch('http://127.0.0.1:8000/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: payloadMessage, context: ctx, model: aiModel })
+        body: JSON.stringify({
+          message: payloadMessage,
+          context: ctx,
+          model: aiModel,
+          api_provider: apiProvider,
+          api_key: apiKey
+        })
       })
 
       if (!res.ok || !res.body) throw new Error('Stream failed')
@@ -300,6 +322,10 @@ export function useChat(activeTabId: string, tabs: Tab[], isDeveloperMode: boole
   return {
     aiModel,
     setAiModel,
+    apiProvider,
+    setApiProvider,
+    apiKey,
+    setApiKey,
     currentMessage,
     setCurrentMessage,
     isTyping,
