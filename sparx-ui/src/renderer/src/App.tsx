@@ -80,59 +80,61 @@ const copyToClipboard = (text: string) => navigator.clipboard.writeText(text)
 // ⚡ Bolt Optimization: Extracted inline WorkspaceNote JSX into a standalone component.
 // Wrapped in React.memo() to prevent expensive O(N) ReactMarkdown re-renders when
 // unrelated App state (like typing in the chat) changes.
-const WorkspaceNote = React.memo(({ note, T, onDelete }: { note: any; T: any; onDelete: (id: string) => void }) => {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="p-4 rounded-xl border relative group shadow-sm"
-      style={{ background: T.surface, borderColor: T.border }}
-    >
-      <button
-        onClick={() => onDelete(note.id)}
-        className="absolute top-3 right-3 p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500/10 text-red-500"
+const WorkspaceNote = React.memo(
+  ({ note, T, onDelete }: { note: any; T: any; onDelete: (id: string) => void }) => {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="p-4 rounded-xl border relative group shadow-sm"
+        style={{ background: T.surface, borderColor: T.border }}
       >
-        <Trash2 className="w-4 h-4" />
-      </button>
-      <h3 className="font-semibold mb-2 pr-8" style={{ color: T.text, fontSize: 15 }}>
-        {note.title || 'Untitled'}
-      </h3>
-      <div
-        className="text-sm opacity-80"
-        style={{ color: T.textDim, fontSize: 11, marginBottom: 12 }}
-      >
-        {new Date(note.timestamp || Date.now()).toLocaleString()}
-      </div>
+        <button
+          onClick={() => onDelete(note.id)}
+          className="absolute top-3 right-3 p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500/10 text-red-500"
+        >
+          <Trash2 className="w-4 h-4" />
+        </button>
+        <h3 className="font-semibold mb-2 pr-8" style={{ color: T.text, fontSize: 15 }}>
+          {note.title || 'Untitled'}
+        </h3>
+        <div
+          className="text-sm opacity-80"
+          style={{ color: T.textDim, fontSize: 11, marginBottom: 12 }}
+        >
+          {new Date(note.timestamp || Date.now()).toLocaleString()}
+        </div>
 
-      <div
-        className="max-h-40 overflow-y-auto no-scrollbar rounded-lg p-3 text-sm"
-        style={{
-          background: T.bg,
-          border: `1px solid ${T.borderMuted}`,
-          color: T.text
-        }}
-      >
-        <ReactMarkdown
-          components={{
-            h1: ({ children }) => (
-              <h1 style={{ fontWeight: 600, fontSize: 14, marginBottom: 4 }}>{children}</h1>
-            ),
-            h2: ({ children }) => (
-              <h2 style={{ fontWeight: 600, fontSize: 13, marginBottom: 4 }}>{children}</h2>
-            ),
-            p: ({ children }) => <p style={{ marginBottom: 6, lineHeight: 1.5 }}>{children}</p>,
-            ul: ({ children }) => (
-              <ul style={{ paddingLeft: 16, marginBottom: 6, listStyle: 'disc' }}>{children}</ul>
-            ),
-            li: ({ children }) => <li style={{ marginBottom: 2 }}>{children}</li>
+        <div
+          className="max-h-40 overflow-y-auto no-scrollbar rounded-lg p-3 text-sm"
+          style={{
+            background: T.bg,
+            border: `1px solid ${T.borderMuted}`,
+            color: T.text
           }}
         >
-          {note.content || ' '}
-        </ReactMarkdown>
-      </div>
-    </motion.div>
-  )
-})
+          <ReactMarkdown
+            components={{
+              h1: ({ children }) => (
+                <h1 style={{ fontWeight: 600, fontSize: 14, marginBottom: 4 }}>{children}</h1>
+              ),
+              h2: ({ children }) => (
+                <h2 style={{ fontWeight: 600, fontSize: 13, marginBottom: 4 }}>{children}</h2>
+              ),
+              p: ({ children }) => <p style={{ marginBottom: 6, lineHeight: 1.5 }}>{children}</p>,
+              ul: ({ children }) => (
+                <ul style={{ paddingLeft: 16, marginBottom: 6, listStyle: 'disc' }}>{children}</ul>
+              ),
+              li: ({ children }) => <li style={{ marginBottom: 2 }}>{children}</li>
+            }}
+          >
+            {note.content || ' '}
+          </ReactMarkdown>
+        </div>
+      </motion.div>
+    )
+  }
+)
 
 const ChatMessage = React.memo(({ msg, index, isPrivacyMode, T, onCopy, onSave }: any) => {
   return (
@@ -409,14 +411,17 @@ export default function App(): ReactElement {
 
   // ⚡ Bolt Optimization: Wrapped handleDeleteNote in useCallback to maintain a stable
   // reference, preventing unnecessary re-renders of memoized WorkspaceNote components.
-  const handleDeleteNote = useCallback((id: string) => {
-    if (setNotes) {
-      setNotes((p) => {
-        const arr = Array.isArray(p) ? p : []
-        return arr.filter((n) => n.id !== id)
-      })
-    }
-  }, [setNotes])
+  const handleDeleteNote = useCallback(
+    (id: string) => {
+      if (setNotes) {
+        setNotes((p) => {
+          const arr = Array.isArray(p) ? p : []
+          return arr.filter((n) => n.id !== id)
+        })
+      }
+    },
+    [setNotes]
+  )
 
   const { cloudStatus } = useCloudSync(
     user,
@@ -1492,12 +1497,7 @@ export default function App(): ReactElement {
 
                   <div className="space-y-3">
                     {safeNotes.map((note) => (
-                      <WorkspaceNote
-                        key={note.id}
-                        note={note}
-                        T={T}
-                        onDelete={handleDeleteNote}
-                      />
+                      <WorkspaceNote key={note.id} note={note} T={T} onDelete={handleDeleteNote} />
                     ))}
                   </div>
                 </div>
