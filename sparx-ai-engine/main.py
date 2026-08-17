@@ -7,6 +7,9 @@ import PyPDF2
 import io
 import uuid
 import chromadb
+import urllib.request
+import urllib.error
+import json
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from ddgs import DDGS
 
@@ -34,6 +37,8 @@ class ChatRequest(BaseModel):
     message: str
     context: str = ""
     model: str = "llama3" # <-- NEW: Allows the UI to choose the model
+    api_provider: str = "ollama"
+    api_key: str = ""
 
 @app.post("/api/chat")
 async def chat_with_sparx(request: ChatRequest):
@@ -67,14 +72,51 @@ async def chat_with_sparx(request: ChatRequest):
 
     def generate_stream():
         try:
-            # <-- NEW: Uses the requested model from the UI dropdown
-            stream = ollama.chat(model=request.model, messages=[
-                {'role': 'system', 'content': system_prompt},
-                {'role': 'user', 'content': request.message}
-            ], stream=True)
-            
-            for chunk in stream:
-                yield chunk['message']['content']
+            if request.api_provider == "openrouter":
+                url = "https://openrouter.ai/api/v1/chat/completions"
+                headers = {
+                    "Authorization": f"Bearer {request.api_key}",
+                    "Content-Type": "application/json",
+                    "HTTP-Referer": "http://localhost:3000",
+                    "X-Title": "Sparx Browser"
+                }
+                data = {
+                    "model": request.model,
+                    "messages": [
+                        {'role': 'system', 'content': system_prompt},
+                        {'role': 'user', 'content': request.message}
+                    ],
+                    "stream": True
+                }
+
+                req = urllib.request.Request(url, data=json.dumps(data).encode('utf-8'), headers=headers, method='POST')
+                with urllib.request.urlopen(req) as response:
+                    for line in response:
+                        line = line.decode('utf-8').strip()
+                        if line.startswith('data: '):
+                            json_str = line[6:]
+                            if json_str == '[DONE]':
+                                break
+                            try:
+                                chunk = json.loads(json_str)
+                                if 'choices' in chunk and len(chunk['choices']) > 0:
+                                    delta = chunk['choices'][0].get('delta', {})
+                                    if 'content' in delta:
+                                        yield delta['content']
+                            except json.JSONDecodeError:
+                                pass
+            else:
+                # <-- NEW: Uses the requested model from the UI dropdown
+                stream = ollama.chat(model=request.model, messages=[
+                    {'role': 'system', 'content': system_prompt},
+                    {'role': 'user', 'content': request.message}
+                ], stream=True)
+
+                for chunk in stream:
+                    yield chunk['message']['content']
+        except urllib.error.HTTPError as e:
+             error_body = e.read().decode('utf-8')
+             yield f"HTTP Error {e.code} connecting to OpenRouter: {error_body}"
         except Exception as e:
             yield f"Error connecting to the AI core. Is Ollama running and the model downloaded? Details: {str(e)}"
 

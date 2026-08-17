@@ -9,6 +9,10 @@ export interface ChatMessage {
 
 export function useChat(activeTabId: string, tabs: Tab[], isDeveloperMode: boolean) {
   const [aiModel, setAiModel] = useState(() => localStorage.getItem('sparx_model') || 'llama3')
+  const [apiProvider, setApiProvider] = useState(
+    () => localStorage.getItem('sparx_api_provider') || 'ollama'
+  )
+  const [apiKey, setApiKey] = useState(() => localStorage.getItem('sparx_api_key') || '')
   const [currentMessage, setCurrentMessage] = useState('')
   const [isTyping, setIsTyping] = useState(false)
 
@@ -34,6 +38,12 @@ export function useChat(activeTabId: string, tabs: Tab[], isDeveloperMode: boole
   useEffect(() => {
     localStorage.setItem('sparx_model', aiModel)
   }, [aiModel])
+  useEffect(() => {
+    localStorage.setItem('sparx_api_provider', apiProvider)
+  }, [apiProvider])
+  useEffect(() => {
+    localStorage.setItem('sparx_api_key', apiKey)
+  }, [apiKey])
 
   const getActivePageText = async (): Promise<string> => {
     const webview = document.getElementById(`webview-${activeTabId}`) as any
@@ -47,16 +57,16 @@ export function useChat(activeTabId: string, tabs: Tab[], isDeveloperMode: boole
   }
 
   const getAllTabsText = async (): Promise<string> => {
-    // ⚡ Bolt Optimization: Execute executeJavaScript concurrently using Promise.all
-    // instead of awaiting sequentially in a loop. Reduces wait time from O(N) to O(1).
-    const tabPromises = tabs.map(async (tab) => {
+    // ⚡ Bolt Optimization: Replace O(N) sequential loop with concurrent Promise.all()
+    // This dramatically speeds up cross-tab synthesis (/compare command) by extracting text
+    // from all webviews simultaneously rather than waiting for each one sequentially.
+    const promises = tabs.map(async (tab) => {
       const webview = document.getElementById(`webview-${tab.id}`) as any
       if (webview?.executeJavaScript) {
         try {
           const text = await webview.executeJavaScript('document.body.innerText')
-          if (text) {
+          if (text)
             return `\n\n--- CONTENT FROM TAB: ${tab.title} (${tab.url}) ---\n${text.substring(0, 2500)}`
-          }
         } catch {
           console.warn(`Could not read tab ${tab.title}`)
         }
@@ -64,7 +74,7 @@ export function useChat(activeTabId: string, tabs: Tab[], isDeveloperMode: boole
       return ''
     })
 
-    const results = await Promise.all(tabPromises)
+    const results = await Promise.all(promises)
     return results.join('')
   }
 
@@ -156,7 +166,13 @@ export function useChat(activeTabId: string, tabs: Tab[], isDeveloperMode: boole
       const res = await fetch('http://127.0.0.1:8000/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: payloadMessage, context: ctx, model: aiModel })
+        body: JSON.stringify({
+          message: payloadMessage,
+          context: ctx,
+          model: aiModel,
+          api_provider: apiProvider,
+          api_key: apiKey
+        })
       })
 
       if (!res.ok || !res.body) throw new Error('Stream failed')
@@ -225,7 +241,13 @@ export function useChat(activeTabId: string, tabs: Tab[], isDeveloperMode: boole
       const res = await fetch('http://127.0.0.1:8000/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: payloadMessage, context: ctx, model: aiModel })
+        body: JSON.stringify({
+          message: payloadMessage,
+          context: ctx,
+          model: aiModel,
+          api_provider: apiProvider,
+          api_key: apiKey
+        })
       })
 
       if (!res.ok || !res.body) throw new Error('Stream failed')
@@ -300,6 +322,10 @@ export function useChat(activeTabId: string, tabs: Tab[], isDeveloperMode: boole
   return {
     aiModel,
     setAiModel,
+    apiProvider,
+    setApiProvider,
+    apiKey,
+    setApiKey,
     currentMessage,
     setCurrentMessage,
     isTyping,

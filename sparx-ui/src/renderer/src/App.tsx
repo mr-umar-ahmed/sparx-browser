@@ -390,6 +390,10 @@ export default function App(): ReactElement {
   const {
     aiModel,
     setAiModel,
+    apiProvider,
+    setApiProvider,
+    apiKey,
+    setApiKey,
     currentMessage,
     setCurrentMessage,
     isTyping,
@@ -1959,21 +1963,81 @@ export default function App(): ReactElement {
                   className="text-sm font-medium flex items-center gap-2"
                   style={{ color: T.textMuted }}
                 >
-                  <Cpu className="w-4 h-4" /> AI Engine Model
+                  <Cpu className="w-4 h-4" /> AI Engine API Provider
                 </label>
                 <select
-                  value={aiModel}
-                  onChange={(e) => setAiModel(e.target.value)}
+                  value={apiProvider}
+                  onChange={(e) => setApiProvider(e.target.value)}
                   className="w-full p-3 rounded-lg text-sm outline-none cursor-pointer appearance-none shadow-sm"
                   style={{ background: T.inputBg, border: `1px solid ${T.border}`, color: T.text }}
                 >
-                  <option value="llama3">Meta Llama 3 (8B) - Balanced</option>
-                  <option value="phi3">Microsoft Phi-3 (3B) - Fast</option>
-                  <option value="mistral">Mistral (7B) - Coding</option>
+                  <option value="ollama">Ollama (Local)</option>
+                  <option value="openrouter">OpenRouter (Cloud)</option>
                 </select>
+
+                <label
+                  className="text-sm font-medium flex items-center gap-2 mt-2"
+                  style={{ color: T.textMuted }}
+                >
+                  <Cpu className="w-4 h-4" /> AI Engine Model
+                </label>
+                {apiProvider === 'ollama' ? (
+                  <select
+                    value={aiModel}
+                    onChange={(e) => setAiModel(e.target.value)}
+                    className="w-full p-3 rounded-lg text-sm outline-none cursor-pointer appearance-none shadow-sm"
+                    style={{
+                      background: T.inputBg,
+                      border: `1px solid ${T.border}`,
+                      color: T.text
+                    }}
+                  >
+                    <option value="llama3">Meta Llama 3 (8B) - Balanced</option>
+                    <option value="phi3">Microsoft Phi-3 (3B) - Fast</option>
+                    <option value="mistral">Mistral (7B) - Coding</option>
+                  </select>
+                ) : (
+                  <input
+                    type="text"
+                    value={aiModel}
+                    onChange={(e) => setAiModel(e.target.value)}
+                    placeholder="e.g. meta-llama/llama-3-8b-instruct"
+                    className="w-full p-3 rounded-lg text-sm outline-none shadow-sm"
+                    style={{
+                      background: T.inputBg,
+                      border: `1px solid ${T.border}`,
+                      color: T.text
+                    }}
+                  />
+                )}
                 <span style={{ fontSize: 11, color: T.textDim }}>
-                  *Requires you to download the model locally via `ollama pull [model]`
+                  {apiProvider === 'ollama'
+                    ? '*Requires you to download the model locally via `ollama pull [model]`'
+                    : '*Enter the OpenRouter model ID.'}
                 </span>
+
+                {apiProvider === 'openrouter' && (
+                  <>
+                    <label
+                      className="text-sm font-medium flex items-center gap-2 mt-2"
+                      style={{ color: T.textMuted }}
+                    >
+                      <Settings className="w-4 h-4" /> API Key
+                    </label>
+                    <input
+                      type="password"
+                      value={apiKey}
+                      onChange={(e) => setApiKey(e.target.value)}
+                      placeholder="sk-or-v1-..."
+                      className="w-full p-3 rounded-lg text-sm outline-none shadow-sm"
+                      style={{
+                        background: T.inputBg,
+                        border: `1px solid ${T.border}`,
+                        color: T.text
+                      }}
+                    />
+                  </>
+                )}
               </div>
 
               {/* Memory Management */}
