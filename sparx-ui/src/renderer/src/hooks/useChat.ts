@@ -29,7 +29,11 @@ export function useChat(activeTabId: string, tabs: Tab[], isDeveloperMode: boole
   )
 
   useEffect(() => {
-    localStorage.setItem('sparx_chat', JSON.stringify(chatHistory))
+    // ⚡ Bolt Optimization: Debounce synchronous disk writes
+    const timer = setTimeout(() => {
+      localStorage.setItem('sparx_chat', JSON.stringify(chatHistory))
+    }, 500)
+    return () => clearTimeout(timer)
   }, [chatHistory])
   useEffect(() => {
     localStorage.setItem('sparx_model', aiModel)
