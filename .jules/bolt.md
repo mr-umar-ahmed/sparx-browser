@@ -7,3 +7,6 @@
 ## 2024-05-20 - Sequential DOM interactions across multiple Webviews
 **Learning:** In Electron, communicating with multiple independent `<webview>` tags sequentially using `for...of` and `await webview.executeJavaScript(...)` causes operations that could run concurrently to become unnecessarily linear (O(N)).
 **Action:** When querying or extracting data from multiple independent webviews (e.g., getting text from all tabs), map the `executeJavaScript` promises into an array and use `Promise.all` to execute them concurrently, binding the time taken to the slowest operation instead of the sum of all operations.
+## 2026-08-19 - Main Thread Blocking by Synchronous Disk I/O
+**Learning:** Repeatedly calling `localStorage.setItem` along with `JSON.stringify` during high-frequency React state updates (like AI text streaming) runs synchronously and blocks the main thread, causing severe UI stuttering and input lag.
+**Action:** Always debounce synchronous disk I/O operations and heavy serialization using a timer (e.g. `setTimeout`) inside `useEffect` hooks when the associated state updates rapidly.

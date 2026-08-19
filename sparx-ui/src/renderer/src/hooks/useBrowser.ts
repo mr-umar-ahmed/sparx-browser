@@ -61,22 +61,41 @@ export function useBrowser() {
   const [isPrivacyMode, setIsPrivacyMode] = useState(() => safeParse('sparx_privacy', false))
 
   useEffect(() => {
-    localStorage.setItem('sparx_tabs', JSON.stringify(tabs))
+    // ⚡ Bolt Optimization: Debounce expensive localStorage operations to prevent main thread blocking
+    const timeout = setTimeout(() => {
+      localStorage.setItem('sparx_tabs', JSON.stringify(tabs))
+    }, 500)
+    return () => clearTimeout(timeout)
   }, [tabs])
   useEffect(() => {
-    localStorage.setItem('sparx_activeTab', activeTabId)
+    const timeout = setTimeout(() => {
+      localStorage.setItem('sparx_activeTab', activeTabId)
+    }, 500)
+    return () => clearTimeout(timeout)
   }, [activeTabId])
   useEffect(() => {
-    localStorage.setItem('sparx_bookmarks', JSON.stringify(bookmarks))
+    const timeout = setTimeout(() => {
+      localStorage.setItem('sparx_bookmarks', JSON.stringify(bookmarks))
+    }, 500)
+    return () => clearTimeout(timeout)
   }, [bookmarks])
   useEffect(() => {
-    localStorage.setItem('sparx_history', JSON.stringify(history))
+    const timeout = setTimeout(() => {
+      localStorage.setItem('sparx_history', JSON.stringify(history))
+    }, 500)
+    return () => clearTimeout(timeout)
   }, [history])
   useEffect(() => {
-    localStorage.setItem('sparx_notes', JSON.stringify(notes))
+    const timeout = setTimeout(() => {
+      localStorage.setItem('sparx_notes', JSON.stringify(notes))
+    }, 500)
+    return () => clearTimeout(timeout)
   }, [notes])
   useEffect(() => {
-    localStorage.setItem('sparx_privacy', JSON.stringify(isPrivacyMode))
+    const timeout = setTimeout(() => {
+      localStorage.setItem('sparx_privacy', JSON.stringify(isPrivacyMode))
+    }, 500)
+    return () => clearTimeout(timeout)
   }, [isPrivacyMode])
 
   // Sync URL bar with active tab, hide internal URL
