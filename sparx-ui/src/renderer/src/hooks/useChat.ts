@@ -29,10 +29,17 @@ export function useChat(activeTabId: string, tabs: Tab[], isDeveloperMode: boole
   )
 
   useEffect(() => {
-    localStorage.setItem('sparx_chat', JSON.stringify(chatHistory))
+    // ⚡ Bolt Optimization: Debounce expensive localStorage operations to prevent main thread blocking
+    const timeout = setTimeout(() => {
+      localStorage.setItem('sparx_chat', JSON.stringify(chatHistory))
+    }, 500)
+    return () => clearTimeout(timeout)
   }, [chatHistory])
   useEffect(() => {
-    localStorage.setItem('sparx_model', aiModel)
+    const timeout = setTimeout(() => {
+      localStorage.setItem('sparx_model', aiModel)
+    }, 500)
+    return () => clearTimeout(timeout)
   }, [aiModel])
 
   const getActivePageText = async (): Promise<string> => {
