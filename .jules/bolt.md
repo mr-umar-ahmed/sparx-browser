@@ -10,3 +10,6 @@
 ## 2026-08-19 - Main Thread Blocking by Synchronous Disk I/O
 **Learning:** Repeatedly calling `localStorage.setItem` along with `JSON.stringify` during high-frequency React state updates (like AI text streaming) runs synchronously and blocks the main thread, causing severe UI stuttering and input lag.
 **Action:** Always debounce synchronous disk I/O operations and heavy serialization using a timer (e.g. `setTimeout`) inside `useEffect` hooks when the associated state updates rapidly.
+## 2026-08-21 - ReactMarkdown Inline Object References
+**Learning:** Passing an inline object directly to `ReactMarkdown`'s `components` prop causes it to unmount and remount the entire Markdown DOM tree on every render, even for memoized components like `ChatMessage` and `WorkspaceNote`. This destroys performance during high-frequency updates, such as typing or streaming text.
+**Action:** Always extract the `components` object outside the render cycle if it has no dependencies (e.g., `WorkspaceNote`), or wrap it in `useMemo` with minimal dependencies (e.g., `[T, onCopy]`) when it relies on component scope (e.g., `ChatMessage`).
