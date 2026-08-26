@@ -166,7 +166,8 @@ const Greeting = ({ T }: { T: any }) => {
   )
 }
 
-export default function ScrollMorphHero({
+// ⚡ Bolt Optimization: Added React.memo() to prevent expensive re-renders of the 3D New Tab component during frequent App state updates (e.g. typing in the chat)
+const ScrollMorphHero = React.memo(function ScrollMorphHero({
   onNavigate,
   T,
   isPrivacyMode
@@ -523,4 +524,6 @@ export default function ScrollMorphHero({
       </div>
     </div>
   )
-}
+})
+
+export default ScrollMorphHero;

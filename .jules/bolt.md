@@ -13,3 +13,6 @@
 ## 2026-08-21 - ReactMarkdown Inline Object References
 **Learning:** Passing an inline object directly to `ReactMarkdown`'s `components` prop causes it to unmount and remount the entire Markdown DOM tree on every render, even for memoized components like `ChatMessage` and `WorkspaceNote`. This destroys performance during high-frequency updates, such as typing or streaming text.
 **Action:** Always extract the `components` object outside the render cycle if it has no dependencies (e.g., `WorkspaceNote`), or wrap it in `useMemo` with minimal dependencies (e.g., `[T, onCopy]`) when it relies on component scope (e.g., `ChatMessage`).
+## 2026-08-26 - Unnecessary Renders in Main App Component
+**Learning:** Frequent top-level state updates (e.g., chat input keystrokes in \`App.tsx\`) cause expensive re-renders of all rendered tabs in the active session. This heavily impacts performance when rendering complex components like \`ScrollMorphHero\` or \`SparxNewTab\` that sit inside the \`App.tsx\` mappings.
+**Action:** Ensure heavy top-level tab components like \`ScrollMorphHero\` and \`SparxNewTab\` are wrapped in \`React.memo()\` to prevent re-rendering them when irrelevant global states (like typing) update.

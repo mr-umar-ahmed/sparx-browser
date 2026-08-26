@@ -88,7 +88,8 @@ const Greeting = ({ T }: { T: any }) => {
 }
 
 // --- MAIN NEW TAB COMPONENT ---
-export default function SparxNewTab({
+// ⚡ Bolt Optimization: Added React.memo() to prevent expensive re-renders of the New Tab component during frequent App state updates (e.g. typing in the chat)
+const SparxNewTab = React.memo(function SparxNewTab({
   onNavigate,
   T,
   isPrivacyMode
@@ -510,4 +511,6 @@ export default function SparxNewTab({
       </div>
     </div>
   )
-}
+})
+
+export default SparxNewTab;
