@@ -16,3 +16,6 @@
 ## 2026-08-26 - Unnecessary Renders in Main App Component
 **Learning:** Frequent top-level state updates (e.g., chat input keystrokes in \`App.tsx\`) cause expensive re-renders of all rendered tabs in the active session. This heavily impacts performance when rendering complex components like \`ScrollMorphHero\` or \`SparxNewTab\` that sit inside the \`App.tsx\` mappings.
 **Action:** Ensure heavy top-level tab components like \`ScrollMorphHero\` and \`SparxNewTab\` are wrapped in \`React.memo()\` to prevent re-rendering them when irrelevant global states (like typing) update.
+## 2026-08-27 - React.memo in Array Maps
+**Learning:** Wrapping children of mapped arrays with `React.memo()` is ineffective if the parent is generating inline props (like dynamically created objects or functions) unless the mapping logic itself is memoized. In `ScrollMorphHero`, `React.memo` on `FlipCard` did not prevent re-renders when typing in the search bar because the `target` object was created freshly on each render.
+**Action:** When a parent dynamically generates props during a `.map()` that should trigger a re-render *only* on specific dependencies, wrap the entire mapping logic block in `useMemo` with proper dependencies to ensure referential equality for unchanged items.
