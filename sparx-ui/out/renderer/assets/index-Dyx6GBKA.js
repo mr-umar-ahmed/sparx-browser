@@ -73626,7 +73626,7 @@ const Greeting = ({ T }) => {
     }
   );
 };
-function ScrollMorphHero({
+const ScrollMorphHero = React.memo(function ScrollMorphHero2({
   onNavigate,
   T,
   isPrivacyMode
@@ -73980,7 +73980,7 @@ function ScrollMorphHero({
       ]
     }
   );
-}
+});
 const StatusDot = ({ isPrivacy }) => /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "relative flex h-2 w-2", children: [
   /* @__PURE__ */ jsxRuntimeExports.jsx(
     "span",
