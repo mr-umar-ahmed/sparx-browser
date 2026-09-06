@@ -330,68 +330,70 @@ const ScrollMorphHero = React.memo(function ScrollMorphHero({
       </div>
 
       <div className="absolute inset-0 pointer-events-none z-0 flex items-center justify-center perspective-1000">
-        {IMAGES.slice(0, TOTAL_IMAGES).map((src, i) => {
-          let target = { x: 0, y: 0, rotation: 0, scale: 1, opacity: 1 }
+        {useMemo(() => {
+          return IMAGES.slice(0, TOTAL_IMAGES).map((src, i) => {
+            let target = { x: 0, y: 0, rotation: 0, scale: 1, opacity: 1 }
 
-          if (introPhase === 'scatter') {
-            target = scatterPositions[i]
-          } else if (introPhase === 'line') {
-            const lineSpacing = 70
-            const lineTotalWidth = TOTAL_IMAGES * lineSpacing
-            target = {
-              x: i * lineSpacing - lineTotalWidth / 2,
-              y: -120,
-              rotation: 0,
-              scale: 1,
-              opacity: 1
+            if (introPhase === 'scatter') {
+              target = scatterPositions[i]
+            } else if (introPhase === 'line') {
+              const lineSpacing = 70
+              const lineTotalWidth = TOTAL_IMAGES * lineSpacing
+              target = {
+                x: i * lineSpacing - lineTotalWidth / 2,
+                y: -120,
+                rotation: 0,
+                scale: 1,
+                opacity: 1
+              }
+            } else {
+              const isMobile = containerSize.width < 768
+              const minDimension = Math.min(containerSize.width, containerSize.height)
+
+              const circleRadius = Math.min(minDimension * 0.35, 350)
+              const circleAngle = (i / TOTAL_IMAGES) * 360
+              const circleRad = (circleAngle * Math.PI) / 180
+              const circlePos = {
+                x: Math.cos(circleRad) * circleRadius,
+                y: Math.sin(circleRad) * circleRadius - 80,
+                rotation: circleAngle + 90
+              }
+
+              const baseRadius = Math.min(containerSize.width, containerSize.height * 1.5)
+              const arcRadius = baseRadius * (isMobile ? 1.4 : 1.1)
+              const arcApexY = containerSize.height * (isMobile ? 0.35 : 0.25)
+              const arcCenterY = arcApexY + arcRadius
+
+              const spreadAngle = isMobile ? 100 : 130
+              const startAngle = -90 - spreadAngle / 2
+              const step = spreadAngle / (TOTAL_IMAGES - 1)
+
+              const scrollProgress = Math.min(Math.max(rotateValue / 360, 0), 1)
+              const maxRotation = spreadAngle * 0.8
+              const boundedRotation = -scrollProgress * maxRotation
+
+              const currentArcAngle = startAngle + i * step + boundedRotation
+              const arcRad = (currentArcAngle * Math.PI) / 180
+
+              const arcPos = {
+                x: Math.cos(arcRad) * arcRadius + parallaxValue,
+                y: Math.sin(arcRad) * arcRadius + arcCenterY,
+                rotation: currentArcAngle + 90,
+                scale: isMobile ? 1.4 : 1.8
+              }
+
+              target = {
+                x: lerp(circlePos.x, arcPos.x, morphValue),
+                y: lerp(circlePos.y, arcPos.y, morphValue),
+                rotation: lerp(circlePos.rotation, arcPos.rotation, morphValue),
+                scale: lerp(1, arcPos.scale, morphValue),
+                opacity: 1
+              }
             }
-          } else {
-            const isMobile = containerSize.width < 768
-            const minDimension = Math.min(containerSize.width, containerSize.height)
 
-            const circleRadius = Math.min(minDimension * 0.35, 350)
-            const circleAngle = (i / TOTAL_IMAGES) * 360
-            const circleRad = (circleAngle * Math.PI) / 180
-            const circlePos = {
-              x: Math.cos(circleRad) * circleRadius,
-              y: Math.sin(circleRad) * circleRadius - 80,
-              rotation: circleAngle + 90
-            }
-
-            const baseRadius = Math.min(containerSize.width, containerSize.height * 1.5)
-            const arcRadius = baseRadius * (isMobile ? 1.4 : 1.1)
-            const arcApexY = containerSize.height * (isMobile ? 0.35 : 0.25)
-            const arcCenterY = arcApexY + arcRadius
-
-            const spreadAngle = isMobile ? 100 : 130
-            const startAngle = -90 - spreadAngle / 2
-            const step = spreadAngle / (TOTAL_IMAGES - 1)
-
-            const scrollProgress = Math.min(Math.max(rotateValue / 360, 0), 1)
-            const maxRotation = spreadAngle * 0.8
-            const boundedRotation = -scrollProgress * maxRotation
-
-            const currentArcAngle = startAngle + i * step + boundedRotation
-            const arcRad = (currentArcAngle * Math.PI) / 180
-
-            const arcPos = {
-              x: Math.cos(arcRad) * arcRadius + parallaxValue,
-              y: Math.sin(arcRad) * arcRadius + arcCenterY,
-              rotation: currentArcAngle + 90,
-              scale: isMobile ? 1.4 : 1.8
-            }
-
-            target = {
-              x: lerp(circlePos.x, arcPos.x, morphValue),
-              y: lerp(circlePos.y, arcPos.y, morphValue),
-              rotation: lerp(circlePos.rotation, arcPos.rotation, morphValue),
-              scale: lerp(1, arcPos.scale, morphValue),
-              opacity: 1
-            }
-          }
-
-          return <FlipCard key={i} src={src} index={i} phase={introPhase} target={target} T={T} />
-        })}
+            return <FlipCard key={i} src={src} index={i} phase={introPhase} target={target} T={T} />
+          })
+        }, [introPhase, scatterPositions, containerSize, morphValue, rotateValue, parallaxValue, T])}
       </div>
 
       {/* SPARX UI OVERLAY */}
