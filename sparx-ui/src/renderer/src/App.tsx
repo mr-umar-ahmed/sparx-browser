@@ -722,6 +722,31 @@ export default function App(): ReactElement {
     }
   }, [isDark, isPrivacyMode])
 
+  // ⚡ Bolt Optimization: Wrapped the dynamic tab rendering logic in a top-level `useMemo`.
+  // Why: The previous inline mapping created new inline object props (e.g. style={{ display: ... }}) on every render of App.tsx. Because App.tsx has frequent top-level state updates (like isTyping, currentMessage), the map triggered O(N) re-renders of the tabs. Wrapping child components in React.memo() was ineffective due to these dynamically generated props.
+  // Impact: Prevents O(N) re-renders of heavy components like ScrollMorphHero across all rendered tabs when unrelated global state changes.
+  // Measurement: Use React Developer Tools Profiler and record a trace while typing in the Chat textarea. You should no longer see ScrollMorphHero or webviews updating.
+  const memoizedTabs = useMemo(() => {
+    return tabs.map((tab) => (
+      <div
+        key={tab.id}
+        className="absolute inset-0 w-full h-full"
+        style={{ display: activeTabId === tab.id ? 'flex' : 'none' }}
+      >
+        {tab.url === 'sparx://newtab' ? (
+          <ScrollMorphHero onNavigate={handleNavigate} T={T} isPrivacyMode={isPrivacyMode} />
+        ) : (
+          <webview
+            id={`webview-${tab.id}`}
+            src={tab.url}
+            className="w-full h-full bg-white"
+            allowpopups={'true' as any}
+          />
+        )}
+      </div>
+    ))
+  }, [tabs, activeTabId, T, isPrivacyMode, handleNavigate])
+
   if (isAuthLoading)
     return (
       <div
@@ -1128,24 +1153,7 @@ export default function App(): ReactElement {
       {/* MAIN CONTENT AREA */}
       <div className="flex flex-1 overflow-hidden relative">
         <div className="flex-1 relative overflow-hidden" style={{ background: T.bg }}>
-          {tabs.map((tab) => (
-            <div
-              key={tab.id}
-              className="absolute inset-0 w-full h-full"
-              style={{ display: activeTabId === tab.id ? 'flex' : 'none' }}
-            >
-              {tab.url === 'sparx://newtab' ? (
-                <ScrollMorphHero onNavigate={handleNavigate} T={T} isPrivacyMode={isPrivacyMode} />
-              ) : (
-                <webview
-                  id={`webview-${tab.id}`}
-                  src={tab.url}
-                  className="w-full h-full bg-white"
-                  allowpopups={'true' as any}
-                />
-              )}
-            </div>
-          ))}
+          {memoizedTabs}
         </div>
 
         <AnimatePresence>
