@@ -19,3 +19,6 @@
 ## 2026-08-27 - Ineffective React.memo() with dynamic inline array maps
 **Learning:** Wrapping a child component rendered via an array `.map()` in `React.memo()` is ineffective if the parent component dynamically generates inline object props (e.g. `target={x, y, rotation}`) during the mapping process. Because the inline object creates a new reference on every parent render, the child will always re-render, defeating the purpose of `React.memo()`.
 **Action:** To properly prevent unnecessary O(N) re-renders of expensive child components in a map, wrap the entire mapping logic block in a `useMemo` hook with proper dependencies at the parent level.
+## 2026-08-28 - FastApi Threadpool Blocking
+**Learning:** In the FastAPI backend (`sparx-ai-engine`), defining endpoints containing synchronous, blocking operations (e.g., disk I/O, or third-party libraries like PyPDF2, ChromaDB, or DDGS) using `async def` blocks the entire asyncio event loop, severely degrading concurrency.
+**Action:** Instead, define these endpoints with `def` so FastAPI automatically executes them in an external threadpool. This ensures that the main event loop isn't blocked by synchronous operations.

@@ -35,8 +35,11 @@ class ChatRequest(BaseModel):
     context: str = ""
     model: str = "llama3" # <-- NEW: Allows the UI to choose the model
 
+# ⚡ Bolt Optimization: Removed `async` from endpoints containing blocking operations
+# (like ChromaDB, DDGS, PyPDF2) to allow FastAPI to automatically execute them
+# in a threadpool, preventing the main asyncio event loop from being blocked.
 @app.post("/api/chat")
-async def chat_with_sparx(request: ChatRequest):
+def chat_with_sparx(request: ChatRequest):
     system_prompt = """
     You are Sparx, a highly intelligent and precise AI assistant integrated directly into a web browser. 
     You have access to different layers of context below. 
@@ -81,9 +84,9 @@ async def chat_with_sparx(request: ChatRequest):
     return StreamingResponse(generate_stream(), media_type="text/plain")
 
 @app.post("/api/extract-pdf")
-async def extract_pdf(file: UploadFile = File(...)):
+def extract_pdf(file: UploadFile = File(...)):
     try:
-        contents = await file.read()
+        contents = file.file.read()
         pdf_reader = PyPDF2.PdfReader(io.BytesIO(contents))
         
         full_text = ""
@@ -107,7 +110,7 @@ async def extract_pdf(file: UploadFile = File(...)):
 
 # --- NEW: Wipe Memory Endpoint ---
 @app.delete("/api/memory")
-async def clear_memory():
+def clear_memory():
     try:
         global collection
         chroma_client.delete_collection(name="sparx_docs")
@@ -130,7 +133,7 @@ class MemoryPayload(BaseModel):
     url: str
 
 @app.post("/api/memorize-page")
-async def memorize_page(payload: MemoryPayload):
+def memorize_page(payload: MemoryPayload):
     try:
         # NOTE: Make sure 'text_splitter' and 'collection' match the variable 
         # names you used earlier in your main.py for the PDF extractor!
