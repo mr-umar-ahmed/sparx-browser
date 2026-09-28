@@ -35,8 +35,14 @@ class ChatRequest(BaseModel):
     context: str = ""
     model: str = "llama3" # <-- NEW: Allows the UI to choose the model
 
+# ⚡ Bolt Performance Optimization:
+# 💡 What: Changed endpoint from `async def` to `def`.
+# 🎯 Why: ChromaDB queries and DDGS web searches are synchronous, blocking operations.
+#         Defining them in an `async def` blocks the FastAPI asyncio event loop, causing severe concurrency bottlenecks.
+# 📊 Impact: Prevents the main thread from blocking, allowing concurrent API requests.
+# 🔬 Measurement: Run load tests with concurrent requests; latency will be significantly reduced as requests are offloaded to an external threadpool.
 @app.post("/api/chat")
-async def chat_with_sparx(request: ChatRequest):
+def chat_with_sparx(request: ChatRequest):
     system_prompt = """
     You are Sparx, a highly intelligent and precise AI assistant integrated directly into a web browser. 
     You have access to different layers of context below. 
@@ -80,10 +86,16 @@ async def chat_with_sparx(request: ChatRequest):
 
     return StreamingResponse(generate_stream(), media_type="text/plain")
 
+# ⚡ Bolt Performance Optimization:
+# 💡 What: Changed endpoint from `async def` to `def` and replaced `await file.read()` with `file.file.read()`.
+# 🎯 Why: PyPDF2 text extraction and ChromaDB additions are CPU and I/O bound synchronous tasks.
+#         Using `async def` would block the entire asyncio event loop.
+# 📊 Impact: Drastically improves concurrency when processing large PDF uploads.
+# 🔬 Measurement: Observe event loop lag while uploading a large PDF; it should remain zero.
 @app.post("/api/extract-pdf")
-async def extract_pdf(file: UploadFile = File(...)):
+def extract_pdf(file: UploadFile = File(...)):
     try:
-        contents = await file.read()
+        contents = file.file.read()
         pdf_reader = PyPDF2.PdfReader(io.BytesIO(contents))
         
         full_text = ""
@@ -106,8 +118,12 @@ async def extract_pdf(file: UploadFile = File(...)):
         return {"error": str(e)}
 
 # --- NEW: Wipe Memory Endpoint ---
+# ⚡ Bolt Performance Optimization:
+# 💡 What: Changed from `async def` to `def`.
+# 🎯 Why: ChromaDB interactions (delete/create collection) are synchronous blocking operations.
+# 📊 Impact: Prevents blocking the async event loop during memory wipes.
 @app.delete("/api/memory")
-async def clear_memory():
+def clear_memory():
     try:
         global collection
         chroma_client.delete_collection(name="sparx_docs")
@@ -129,8 +145,13 @@ class MemoryPayload(BaseModel):
     title: str
     url: str
 
+# ⚡ Bolt Performance Optimization:
+# 💡 What: Changed from `async def` to `def`.
+# 🎯 Why: Text splitting and ChromaDB insertion are synchronous and computationally expensive.
+#         Using `def` allows FastAPI to execute this blocking work in a separate thread.
+# 📊 Impact: The web server remains responsive to other requests while memorizing large pages.
 @app.post("/api/memorize-page")
-async def memorize_page(payload: MemoryPayload):
+def memorize_page(payload: MemoryPayload):
     try:
         # NOTE: Make sure 'text_splitter' and 'collection' match the variable 
         # names you used earlier in your main.py for the PDF extractor!
