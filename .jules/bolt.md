@@ -19,3 +19,6 @@
 ## 2026-08-27 - Ineffective React.memo() with dynamic inline array maps
 **Learning:** Wrapping a child component rendered via an array `.map()` in `React.memo()` is ineffective if the parent component dynamically generates inline object props (e.g. `target={x, y, rotation}`) during the mapping process. Because the inline object creates a new reference on every parent render, the child will always re-render, defeating the purpose of `React.memo()`.
 **Action:** To properly prevent unnecessary O(N) re-renders of expensive child components in a map, wrap the entire mapping logic block in a `useMemo` hook with proper dependencies at the parent level.
+## 2026-08-28 - Fast API async def blocking I/O
+**Learning:** Defining endpoints that perform synchronous, blocking operations (e.g., PyPDF2 parsing, ChromaDB insertions, DDGS network requests) with `async def` completely blocks the FastAPI asyncio event loop, causing severe latency and preventing concurrency.
+**Action:** Always define endpoints performing heavy synchronous I/O or CPU bounds using standard `def`. FastAPI will automatically offload these to an external threadpool. Additionally, ensure `UploadFile` is read synchronously via `file.file.read()` instead of `await file.read()`.
