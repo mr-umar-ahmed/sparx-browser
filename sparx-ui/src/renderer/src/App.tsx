@@ -747,6 +747,77 @@ export default function App(): ReactElement {
     ))
   }, [tabs, activeTabId, T, isPrivacyMode, handleNavigate])
 
+  // ⚡ Bolt Optimization: Memoize the tab bar array filtering and mapping.
+  // Why: App.tsx re-renders on every chat keystroke. Filtering and mapping the tabs inline
+  // creates O(N) new React elements per keystroke, causing unnecessary layout calculations.
+  // Impact: Prevents re-rendering of all tab headers while typing in the chat.
+  const memoizedTabBar = useMemo(() => {
+    return [...tabs.filter((t) => t.pinned), ...tabs.filter((t) => !t.pinned)].map((tab) => (
+      <motion.div
+        key={tab.id}
+        layout
+        initial={{ opacity: 0, scaleX: 0.85 }}
+        animate={{ opacity: 1, scaleX: 1 }}
+        exit={{ opacity: 0, scaleX: 0.85 }}
+        onClick={() => handleSwitchTab(tab)}
+        className="group relative flex items-center gap-2 cursor-pointer"
+        style={{
+          minWidth: tab.pinned ? 40 : 120,
+          maxWidth: tab.pinned ? 40 : 220,
+          height: 36,
+          padding: tab.pinned ? '0 10px' : '0 12px',
+          borderRadius: '8px 8px 0 0',
+          background: activeTabId === tab.id ? T.surface : 'transparent',
+          borderTop: activeTabId === tab.id ? `1px solid ${T.border}` : '1px solid transparent',
+          borderLeft:
+            activeTabId === tab.id ? `1px solid ${T.border}` : '1px solid transparent',
+          borderRight:
+            activeTabId === tab.id ? `1px solid ${T.border}` : '1px solid transparent',
+          borderBottom: activeTabId === tab.id ? `1px solid ${T.surface}` : 'none',
+          marginBottom: activeTabId === tab.id ? -1 : 0
+        }}
+      >
+        {tab.favicon ? (
+          <img
+            src={tab.favicon}
+            className="w-4 h-4 shrink-0 rounded"
+            alt=""
+            onError={(e) => (e.currentTarget.style.display = 'none')}
+          />
+        ) : (
+          <Globe style={{ color: T.textMuted }} className="w-3.5 h-3.5 shrink-0" />
+        )}
+        {!tab.pinned && (
+          <>
+            <span
+              style={{
+                color: activeTabId === tab.id ? T.text : T.textMuted,
+                fontSize: 12,
+                fontWeight: 500
+              }}
+              className="truncate flex-1"
+            >
+              {tab.isLoading ? 'Loading…' : tab.title}
+            </span>
+            <button
+              onClick={(e) => handleCloseTab(e, tab.id)}
+              style={{ color: T.textMuted, borderRadius: 4 }}
+              className="opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/5 p-0.5 ml-1"
+            >
+              <X className="w-3 h-3" />
+            </button>
+          </>
+        )}
+        {activeTabId === tab.id && (
+          <div
+            style={{ background: T.surface }}
+            className="absolute bottom-0 left-0 right-0 h-px"
+          />
+        )}
+      </motion.div>
+    ))
+  }, [tabs, activeTabId, T, handleSwitchTab, handleCloseTab])
+
   if (isAuthLoading)
     return (
       <div
@@ -869,70 +940,7 @@ export default function App(): ReactElement {
         style={{ background: T.sidebarBg, borderBottom: `1px solid ${T.border}` }}
         className="flex items-end h-11 px-2 gap-0.5 shrink-0 pt-2 frosted"
       >
-        {[...tabs.filter((t) => t.pinned), ...tabs.filter((t) => !t.pinned)].map((tab) => (
-          <motion.div
-            key={tab.id}
-            layout
-            initial={{ opacity: 0, scaleX: 0.85 }}
-            animate={{ opacity: 1, scaleX: 1 }}
-            exit={{ opacity: 0, scaleX: 0.85 }}
-            onClick={() => handleSwitchTab(tab)}
-            className="group relative flex items-center gap-2 cursor-pointer"
-            style={{
-              minWidth: tab.pinned ? 40 : 120,
-              maxWidth: tab.pinned ? 40 : 220,
-              height: 36,
-              padding: tab.pinned ? '0 10px' : '0 12px',
-              borderRadius: '8px 8px 0 0',
-              background: activeTabId === tab.id ? T.surface : 'transparent',
-              borderTop: activeTabId === tab.id ? `1px solid ${T.border}` : '1px solid transparent',
-              borderLeft:
-                activeTabId === tab.id ? `1px solid ${T.border}` : '1px solid transparent',
-              borderRight:
-                activeTabId === tab.id ? `1px solid ${T.border}` : '1px solid transparent',
-              borderBottom: activeTabId === tab.id ? `1px solid ${T.surface}` : 'none',
-              marginBottom: activeTabId === tab.id ? -1 : 0
-            }}
-          >
-            {tab.favicon ? (
-              <img
-                src={tab.favicon}
-                className="w-4 h-4 shrink-0 rounded"
-                alt=""
-                onError={(e) => (e.currentTarget.style.display = 'none')}
-              />
-            ) : (
-              <Globe style={{ color: T.textMuted }} className="w-3.5 h-3.5 shrink-0" />
-            )}
-            {!tab.pinned && (
-              <>
-                <span
-                  style={{
-                    color: activeTabId === tab.id ? T.text : T.textMuted,
-                    fontSize: 12,
-                    fontWeight: 500
-                  }}
-                  className="truncate flex-1"
-                >
-                  {tab.isLoading ? 'Loading…' : tab.title}
-                </span>
-                <button
-                  onClick={(e) => handleCloseTab(e, tab.id)}
-                  style={{ color: T.textMuted, borderRadius: 4 }}
-                  className="opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/5 p-0.5 ml-1"
-                >
-                  <X className="w-3 h-3" />
-                </button>
-              </>
-            )}
-            {activeTabId === tab.id && (
-              <div
-                style={{ background: T.surface }}
-                className="absolute bottom-0 left-0 right-0 h-px"
-              />
-            )}
-          </motion.div>
-        ))}
+        {memoizedTabBar}
         <button
           onClick={handleAddTab}
           style={{ color: T.textMuted, borderRadius: 6 }}
