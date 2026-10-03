@@ -72987,6 +72987,10 @@ function useBrowser() {
   const [history, setHistory] = reactExports.useState(() => safeParse("sparx_history", []));
   const [notes, setNotes] = reactExports.useState(() => safeParse("sparx_notes", []));
   const [isPrivacyMode, setIsPrivacyMode] = reactExports.useState(() => safeParse("sparx_privacy", false));
+  const inputUrlRef = reactExports.useRef(inputUrl);
+  reactExports.useEffect(() => {
+    inputUrlRef.current = inputUrl;
+  }, [inputUrl]);
   reactExports.useEffect(() => {
     const timeout = setTimeout(() => {
       localStorage.setItem("sparx_tabs", JSON.stringify(tabs));
@@ -73059,7 +73063,7 @@ function useBrowser() {
   }, []);
   const handleNavigate = reactExports.useCallback(
     (newUrl) => {
-      let url = (newUrl || inputUrl).trim();
+      let url = (newUrl || inputUrlRef.current).trim();
       if (!url) return;
       if (url !== "sparx://newtab") {
         if (!url.includes(".") || url.includes(" ")) {
@@ -73085,7 +73089,7 @@ function useBrowser() {
       );
       setInputUrl(url === "sparx://newtab" ? "" : url);
     },
-    [inputUrl, activeTabId, isPrivacyMode]
+    [activeTabId, isPrivacyMode]
   );
   const addBookmark = reactExports.useCallback(() => {
     const active = tabs.find((t) => t.id === activeTabId);
@@ -73626,7 +73630,7 @@ const Greeting = ({ T }) => {
     }
   );
 };
-function ScrollMorphHero({
+const ScrollMorphHero = React.memo(function ScrollMorphHero2({
   onNavigate,
   T,
   isPrivacyMode
@@ -73745,6 +73749,70 @@ function ScrollMorphHero({
     };
   }, [smoothMorph, smoothScrollRotate, smoothMouseX]);
   const contentOpacity = useTransform(smoothMorph, [0, 0.5], [1, 0]);
+  const flipCards = reactExports.useMemo(() => {
+    return IMAGES.slice(0, TOTAL_IMAGES).map((src, i) => {
+      let target = { x: 0, y: 0, rotation: 0, scale: 1, opacity: 1 };
+      if (introPhase === "scatter") {
+        target = scatterPositions[i];
+      } else if (introPhase === "line") {
+        const lineSpacing = 70;
+        const lineTotalWidth = TOTAL_IMAGES * lineSpacing;
+        target = {
+          x: i * lineSpacing - lineTotalWidth / 2,
+          y: -120,
+          rotation: 0,
+          scale: 1,
+          opacity: 1
+        };
+      } else {
+        const isMobile = containerSize.width < 768;
+        const minDimension = Math.min(containerSize.width, containerSize.height);
+        const circleRadius = Math.min(minDimension * 0.35, 350);
+        const circleAngle = i / TOTAL_IMAGES * 360;
+        const circleRad = circleAngle * Math.PI / 180;
+        const circlePos = {
+          x: Math.cos(circleRad) * circleRadius,
+          y: Math.sin(circleRad) * circleRadius - 80,
+          rotation: circleAngle + 90
+        };
+        const baseRadius = Math.min(containerSize.width, containerSize.height * 1.5);
+        const arcRadius = baseRadius * (isMobile ? 1.4 : 1.1);
+        const arcApexY = containerSize.height * (isMobile ? 0.35 : 0.25);
+        const arcCenterY = arcApexY + arcRadius;
+        const spreadAngle = isMobile ? 100 : 130;
+        const startAngle = -90 - spreadAngle / 2;
+        const step = spreadAngle / (TOTAL_IMAGES - 1);
+        const scrollProgress = Math.min(Math.max(rotateValue / 360, 0), 1);
+        const maxRotation = spreadAngle * 0.8;
+        const boundedRotation = -scrollProgress * maxRotation;
+        const currentArcAngle = startAngle + i * step + boundedRotation;
+        const arcRad = currentArcAngle * Math.PI / 180;
+        const arcPos = {
+          x: Math.cos(arcRad) * arcRadius + parallaxValue,
+          y: Math.sin(arcRad) * arcRadius + arcCenterY,
+          rotation: currentArcAngle + 90,
+          scale: isMobile ? 1.4 : 1.8
+        };
+        target = {
+          x: lerp(circlePos.x, arcPos.x, morphValue),
+          y: lerp(circlePos.y, arcPos.y, morphValue),
+          rotation: lerp(circlePos.rotation, arcPos.rotation, morphValue),
+          scale: lerp(1, arcPos.scale, morphValue),
+          opacity: 1
+        };
+      }
+      return /* @__PURE__ */ jsxRuntimeExports.jsx(FlipCard, { src, index: i, phase: introPhase, target, T }, i);
+    });
+  }, [
+    introPhase,
+    scatterPositions,
+    containerSize.width,
+    containerSize.height,
+    rotateValue,
+    parallaxValue,
+    morphValue,
+    T
+  ]);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(
     "div",
     {
@@ -73770,59 +73838,7 @@ function ScrollMorphHero({
             }
           )
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 pointer-events-none z-0 flex items-center justify-center perspective-1000", children: IMAGES.slice(0, TOTAL_IMAGES).map((src, i) => {
-          let target = { x: 0, y: 0, rotation: 0, scale: 1, opacity: 1 };
-          if (introPhase === "scatter") {
-            target = scatterPositions[i];
-          } else if (introPhase === "line") {
-            const lineSpacing = 70;
-            const lineTotalWidth = TOTAL_IMAGES * lineSpacing;
-            target = {
-              x: i * lineSpacing - lineTotalWidth / 2,
-              y: -120,
-              rotation: 0,
-              scale: 1,
-              opacity: 1
-            };
-          } else {
-            const isMobile = containerSize.width < 768;
-            const minDimension = Math.min(containerSize.width, containerSize.height);
-            const circleRadius = Math.min(minDimension * 0.35, 350);
-            const circleAngle = i / TOTAL_IMAGES * 360;
-            const circleRad = circleAngle * Math.PI / 180;
-            const circlePos = {
-              x: Math.cos(circleRad) * circleRadius,
-              y: Math.sin(circleRad) * circleRadius - 80,
-              rotation: circleAngle + 90
-            };
-            const baseRadius = Math.min(containerSize.width, containerSize.height * 1.5);
-            const arcRadius = baseRadius * (isMobile ? 1.4 : 1.1);
-            const arcApexY = containerSize.height * (isMobile ? 0.35 : 0.25);
-            const arcCenterY = arcApexY + arcRadius;
-            const spreadAngle = isMobile ? 100 : 130;
-            const startAngle = -90 - spreadAngle / 2;
-            const step = spreadAngle / (TOTAL_IMAGES - 1);
-            const scrollProgress = Math.min(Math.max(rotateValue / 360, 0), 1);
-            const maxRotation = spreadAngle * 0.8;
-            const boundedRotation = -scrollProgress * maxRotation;
-            const currentArcAngle = startAngle + i * step + boundedRotation;
-            const arcRad = currentArcAngle * Math.PI / 180;
-            const arcPos = {
-              x: Math.cos(arcRad) * arcRadius + parallaxValue,
-              y: Math.sin(arcRad) * arcRadius + arcCenterY,
-              rotation: currentArcAngle + 90,
-              scale: isMobile ? 1.4 : 1.8
-            };
-            target = {
-              x: lerp(circlePos.x, arcPos.x, morphValue),
-              y: lerp(circlePos.y, arcPos.y, morphValue),
-              rotation: lerp(circlePos.rotation, arcPos.rotation, morphValue),
-              scale: lerp(1, arcPos.scale, morphValue),
-              opacity: 1
-            };
-          }
-          return /* @__PURE__ */ jsxRuntimeExports.jsx(FlipCard, { src, index: i, phase: introPhase, target, T }, i);
-        }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 pointer-events-none z-0 flex items-center justify-center perspective-1000", children: flipCards }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 pointer-events-none z-10 flex flex-col items-center justify-center px-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
           motion.div,
           {
@@ -73980,7 +73996,7 @@ function ScrollMorphHero({
       ]
     }
   );
-}
+});
 const StatusDot = ({ isPrivacy }) => /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "relative flex h-2 w-2", children: [
   /* @__PURE__ */ jsxRuntimeExports.jsx(
     "span",
@@ -74013,184 +74029,189 @@ const workspaceNoteMarkdownComponents = {
   ul: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { style: { paddingLeft: 16, marginBottom: 6, listStyle: "disc" }, children }),
   li: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx("li", { style: { marginBottom: 2 }, children })
 };
-const WorkspaceNote = React.memo(({ note, T, onDelete }) => {
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs(
-    motion.div,
-    {
-      initial: { opacity: 0, y: 10 },
-      animate: { opacity: 1, y: 0 },
-      className: "p-4 rounded-xl border relative group shadow-sm",
-      style: { background: T.surface, borderColor: T.border },
-      children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "button",
-          {
-            onClick: () => onDelete(note.id),
-            className: "absolute top-3 right-3 p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500/10 text-red-500",
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "w-4 h-4" })
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-semibold mb-2 pr-8", style: { color: T.text, fontSize: 15 }, children: note.title || "Untitled" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: "text-sm opacity-80",
-            style: { color: T.textDim, fontSize: 11, marginBottom: 12 },
-            children: new Date(note.timestamp || Date.now()).toLocaleString()
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "div",
-          {
-            className: "max-h-40 overflow-y-auto no-scrollbar rounded-lg p-3 text-sm",
-            style: {
-              background: T.bg,
-              border: `1px solid ${T.borderMuted}`,
-              color: T.text
-            },
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx(Markdown, { components: workspaceNoteMarkdownComponents, children: note.content || " " })
-          }
-        )
-      ]
-    }
-  );
-});
+const WorkspaceNote = React.memo(
+  ({ note, T, onDelete }) => {
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      motion.div,
+      {
+        initial: { opacity: 0, y: 10 },
+        animate: { opacity: 1, y: 0 },
+        className: "p-4 rounded-xl border relative group shadow-sm",
+        style: { background: T.surface, borderColor: T.border },
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              onClick: () => onDelete(note.id),
+              className: "absolute top-3 right-3 p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500/10 text-red-500",
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "w-4 h-4" })
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-semibold mb-2 pr-8", style: { color: T.text, fontSize: 15 }, children: note.title || "Untitled" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "div",
+            {
+              className: "text-sm opacity-80",
+              style: { color: T.textDim, fontSize: 11, marginBottom: 12 },
+              children: new Date(note.timestamp || Date.now()).toLocaleString()
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "div",
+            {
+              className: "max-h-40 overflow-y-auto no-scrollbar rounded-lg p-3 text-sm",
+              style: {
+                background: T.bg,
+                border: `1px solid ${T.borderMuted}`,
+                color: T.text
+              },
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(Markdown, { components: workspaceNoteMarkdownComponents, children: note.content || " " })
+            }
+          )
+        ]
+      }
+    );
+  }
+);
 const ChatMessage = React.memo(({ msg, index: index2, isPrivacyMode, T, onCopy, onSave }) => {
-  const markdownComponents = reactExports.useMemo(() => ({
-    h1: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "h1",
-      {
-        style: {
-          color: T.text,
-          fontWeight: 700,
-          fontSize: 16,
-          marginBottom: 8
-        },
-        children
-      }
-    ),
-    h2: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "h2",
-      {
-        style: {
-          color: T.text,
-          fontWeight: 600,
-          fontSize: 14,
-          marginBottom: 6
-        },
-        children
-      }
-    ),
-    h3: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "h3",
-      {
-        style: {
-          color: T.text,
-          fontWeight: 600,
-          fontSize: 13,
-          marginBottom: 4
-        },
-        children
-      }
-    ),
-    p: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx("p", { style: { marginBottom: 8, lineHeight: 1.6 }, children }),
-    ul: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "ul",
-      {
-        style: {
-          paddingLeft: 16,
-          marginBottom: 8,
-          listStyle: "disc"
-        },
-        children
-      }
-    ),
-    ol: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "ol",
-      {
-        style: {
-          paddingLeft: 16,
-          marginBottom: 8,
-          listStyle: "decimal"
-        },
-        children
-      }
-    ),
-    li: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx("li", { style: { marginBottom: 3, lineHeight: 1.5 }, children }),
-    strong: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { style: { color: T.text, fontWeight: 600 }, children }),
-    a: ({ href, children }) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-      "a",
-      {
-        href,
-        style: {
-          color: T.accent,
-          textDecoration: "underline",
-          textUnderlineOffset: 2
-        },
-        children
-      }
-    ),
-    code({ node: node2, inline, className, children, ...props }) {
-      const match = /language-(\w+)/.exec(className || "");
-      const codeText2 = String(children).replace(/\n$/, "");
-      return !inline && match ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
-        "div",
-        {
-          className: "relative group/code my-3 shadow-sm",
-          style: {
-            borderRadius: 10,
-            overflow: "hidden",
-            border: `1px solid ${T.border}`
-          },
-          children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              highlighter,
-              {
-                ...props,
-                style: vs,
-                language: match[1],
-                PreTag: "div",
-                customStyle: {
-                  margin: 0,
-                  fontSize: 12,
-                  fontFamily: '"DM Mono", monospace',
-                  background: T.surface
-                },
-                children: codeText2
-              }
-            ),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "button",
-              {
-                onClick: () => onCopy(codeText2),
-                className: "absolute top-2 right-2 opacity-0 group-hover/code:opacity-100 transition-opacity",
-                style: {
-                  background: "rgba(0,0,0,0.05)",
-                  border: "1px solid rgba(0,0,0,0.1)",
-                  borderRadius: 6,
-                  padding: "4px 6px"
-                },
-                children: /* @__PURE__ */ jsxRuntimeExports.jsx(Copy, { className: "w-3 h-3 text-gray-500" })
-              }
-            )
-          ]
-        }
-      ) : /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "code",
+  const markdownComponents = reactExports.useMemo(
+    () => ({
+      h1: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "h1",
         {
           style: {
-            background: T.accentDim,
-            color: T.accent,
-            padding: "1px 6px",
-            borderRadius: 4,
-            fontFamily: '"DM Mono", monospace',
-            fontSize: 12
+            color: T.text,
+            fontWeight: 700,
+            fontSize: 16,
+            marginBottom: 8
           },
           children
         }
-      );
-    }
-  }), [T, onCopy]);
+      ),
+      h2: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "h2",
+        {
+          style: {
+            color: T.text,
+            fontWeight: 600,
+            fontSize: 14,
+            marginBottom: 6
+          },
+          children
+        }
+      ),
+      h3: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "h3",
+        {
+          style: {
+            color: T.text,
+            fontWeight: 600,
+            fontSize: 13,
+            marginBottom: 4
+          },
+          children
+        }
+      ),
+      p: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx("p", { style: { marginBottom: 8, lineHeight: 1.6 }, children }),
+      ul: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "ul",
+        {
+          style: {
+            paddingLeft: 16,
+            marginBottom: 8,
+            listStyle: "disc"
+          },
+          children
+        }
+      ),
+      ol: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "ol",
+        {
+          style: {
+            paddingLeft: 16,
+            marginBottom: 8,
+            listStyle: "decimal"
+          },
+          children
+        }
+      ),
+      li: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx("li", { style: { marginBottom: 3, lineHeight: 1.5 }, children }),
+      strong: ({ children }) => /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { style: { color: T.text, fontWeight: 600 }, children }),
+      a: ({ href, children }) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "a",
+        {
+          href,
+          style: {
+            color: T.accent,
+            textDecoration: "underline",
+            textUnderlineOffset: 2
+          },
+          children
+        }
+      ),
+      code({ node: node2, inline, className, children, ...props }) {
+        const match = /language-(\w+)/.exec(className || "");
+        const codeText2 = String(children).replace(/\n$/, "");
+        return !inline && match ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "div",
+          {
+            className: "relative group/code my-3 shadow-sm",
+            style: {
+              borderRadius: 10,
+              overflow: "hidden",
+              border: `1px solid ${T.border}`
+            },
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                highlighter,
+                {
+                  ...props,
+                  style: vs,
+                  language: match[1],
+                  PreTag: "div",
+                  customStyle: {
+                    margin: 0,
+                    fontSize: 12,
+                    fontFamily: '"DM Mono", monospace',
+                    background: T.surface
+                  },
+                  children: codeText2
+                }
+              ),
+              /* @__PURE__ */ jsxRuntimeExports.jsx(
+                "button",
+                {
+                  onClick: () => onCopy(codeText2),
+                  className: "absolute top-2 right-2 opacity-0 group-hover/code:opacity-100 transition-opacity",
+                  style: {
+                    background: "rgba(0,0,0,0.05)",
+                    border: "1px solid rgba(0,0,0,0.1)",
+                    borderRadius: 6,
+                    padding: "4px 6px"
+                  },
+                  children: /* @__PURE__ */ jsxRuntimeExports.jsx(Copy, { className: "w-3 h-3 text-gray-500" })
+                }
+              )
+            ]
+          }
+        ) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "code",
+          {
+            style: {
+              background: T.accentDim,
+              color: T.accent,
+              padding: "1px 6px",
+              borderRadius: 4,
+              fontFamily: '"DM Mono", monospace',
+              fontSize: 12
+            },
+            children
+          }
+        );
+      }
+    }),
+    [T, onCopy]
+  );
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(
     motion.div,
     {
@@ -74321,14 +74342,17 @@ function App() {
     handleWipeMemory
   } = useChat(activeTabId, tabs, isDeveloperMode);
   const safeNotes = Array.isArray(notes) ? notes : [];
-  const handleDeleteNote = reactExports.useCallback((id2) => {
-    if (setNotes) {
-      setNotes((p) => {
-        const arr = Array.isArray(p) ? p : [];
-        return arr.filter((n) => n.id !== id2);
-      });
-    }
-  }, [setNotes]);
+  const handleDeleteNote = reactExports.useCallback(
+    (id2) => {
+      if (setNotes) {
+        setNotes((p) => {
+          const arr = Array.isArray(p) ? p : [];
+          return arr.filter((n) => n.id !== id2);
+        });
+      }
+    },
+    [setNotes]
+  );
   const { cloudStatus } = useCloudSync(
     user,
     bookmarks,
@@ -74608,6 +74632,25 @@ function App() {
       };
     }
   }, [isDark, isPrivacyMode]);
+  const memoizedTabs = reactExports.useMemo(() => {
+    return tabs.map((tab2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
+      "div",
+      {
+        className: "absolute inset-0 w-full h-full",
+        style: { display: activeTabId === tab2.id ? "flex" : "none" },
+        children: tab2.url === "sparx://newtab" ? /* @__PURE__ */ jsxRuntimeExports.jsx(ScrollMorphHero, { onNavigate: handleNavigate, T, isPrivacyMode }) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+          "webview",
+          {
+            id: `webview-${tab2.id}`,
+            src: tab2.url,
+            className: "w-full h-full bg-white",
+            allowpopups: "true"
+          }
+        )
+      },
+      tab2.id
+    ));
+  }, [tabs, activeTabId, T, isPrivacyMode, handleNavigate]);
   if (isAuthLoading)
     return /* @__PURE__ */ jsxRuntimeExports.jsx(
       "div",
@@ -75016,23 +75059,7 @@ function App() {
           }
         ),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-1 overflow-hidden relative", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 relative overflow-hidden", style: { background: T.bg }, children: tabs.map((tab2) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "div",
-            {
-              className: "absolute inset-0 w-full h-full",
-              style: { display: activeTabId === tab2.id ? "flex" : "none" },
-              children: tab2.url === "sparx://newtab" ? /* @__PURE__ */ jsxRuntimeExports.jsx(ScrollMorphHero, { onNavigate: handleNavigate, T, isPrivacyMode }) : /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "webview",
-                {
-                  id: `webview-${tab2.id}`,
-                  src: tab2.url,
-                  className: "w-full h-full bg-white",
-                  allowpopups: "true"
-                }
-              )
-            },
-            tab2.id
-          )) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 relative overflow-hidden", style: { background: T.bg }, children: memoizedTabs }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(AnimatePresence, { children: isChatOpen && /* @__PURE__ */ jsxRuntimeExports.jsxs(
             motion.aside,
             {
@@ -75407,15 +75434,7 @@ function App() {
                       ]
                     }
                   ),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-3", children: safeNotes.map((note) => /* @__PURE__ */ jsxRuntimeExports.jsx(
-                    WorkspaceNote,
-                    {
-                      note,
-                      T,
-                      onDelete: handleDeleteNote
-                    },
-                    note.id
-                  )) })
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-3", children: safeNotes.map((note) => /* @__PURE__ */ jsxRuntimeExports.jsx(WorkspaceNote, { note, T, onDelete: handleDeleteNote }, note.id)) })
                 ] }),
                 activePanel === "bookmarks" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 overflow-y-auto p-4", style: { background: T.bg }, children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsx(

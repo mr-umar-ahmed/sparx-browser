@@ -368,7 +368,16 @@ const ScrollMorphHero = React.memo(function ScrollMorphHero({
 
       return <FlipCard key={i} src={src} index={i} phase={introPhase} target={target} T={T} />
     })
-  }, [introPhase, scatterPositions, containerSize.width, containerSize.height, rotateValue, parallaxValue, morphValue, T])
+  }, [
+    introPhase,
+    scatterPositions,
+    containerSize.width,
+    containerSize.height,
+    rotateValue,
+    parallaxValue,
+    morphValue,
+    T
+  ])
 
   return (
     <div
@@ -530,4 +539,4 @@ const ScrollMorphHero = React.memo(function ScrollMorphHero({
   )
 })
 
-export default ScrollMorphHero;
+export default ScrollMorphHero
