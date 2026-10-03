@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 
 export interface Tab {
   id: string
@@ -59,6 +59,12 @@ export function useBrowser() {
   const [notes, setNotes] = useState<NoteItem[]>(() => safeParse('sparx_notes', []))
 
   const [isPrivacyMode, setIsPrivacyMode] = useState(() => safeParse('sparx_privacy', false))
+
+  // ⚡ Bolt Optimization: Use a ref for inputUrl to prevent handleNavigate from changing on every keystroke
+  const inputUrlRef = useRef(inputUrl)
+  useEffect(() => {
+    inputUrlRef.current = inputUrl
+  }, [inputUrl])
 
   useEffect(() => {
     // ⚡ Bolt Optimization: Debounce expensive localStorage operations to prevent main thread blocking
@@ -140,7 +146,7 @@ export function useBrowser() {
 
   const handleNavigate = useCallback(
     (newUrl?: string) => {
-      let url = (newUrl || inputUrl).trim()
+      let url = (newUrl || inputUrlRef.current).trim()
       if (!url) return
 
       // Ignore internal protocol for search parsing
@@ -174,7 +180,7 @@ export function useBrowser() {
       )
       setInputUrl(url === 'sparx://newtab' ? '' : url)
     },
-    [inputUrl, activeTabId, isPrivacyMode]
+    [activeTabId, isPrivacyMode]
   )
 
   const addBookmark = useCallback(() => {

@@ -94,180 +94,183 @@ const workspaceNoteMarkdownComponents: import('react-markdown').Components = {
   li: ({ children }) => <li style={{ marginBottom: 2 }}>{children}</li>
 }
 
-const WorkspaceNote = React.memo(({ note, T, onDelete }: { note: any; T: any; onDelete: (id: string) => void }) => {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="p-4 rounded-xl border relative group shadow-sm"
-      style={{ background: T.surface, borderColor: T.border }}
-    >
-      <button
-        onClick={() => onDelete(note.id)}
-        className="absolute top-3 right-3 p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500/10 text-red-500"
+const WorkspaceNote = React.memo(
+  ({ note, T, onDelete }: { note: any; T: any; onDelete: (id: string) => void }) => {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="p-4 rounded-xl border relative group shadow-sm"
+        style={{ background: T.surface, borderColor: T.border }}
       >
-        <Trash2 className="w-4 h-4" />
-      </button>
-      <h3 className="font-semibold mb-2 pr-8" style={{ color: T.text, fontSize: 15 }}>
-        {note.title || 'Untitled'}
-      </h3>
-      <div
-        className="text-sm opacity-80"
-        style={{ color: T.textDim, fontSize: 11, marginBottom: 12 }}
-      >
-        {new Date(note.timestamp || Date.now()).toLocaleString()}
-      </div>
-
-      <div
-        className="max-h-40 overflow-y-auto no-scrollbar rounded-lg p-3 text-sm"
-        style={{
-          background: T.bg,
-          border: `1px solid ${T.borderMuted}`,
-          color: T.text
-        }}
-      >
-        <ReactMarkdown components={workspaceNoteMarkdownComponents}>
-          {note.content || ' '}
-        </ReactMarkdown>
-      </div>
-    </motion.div>
-  )
-})
-
-const ChatMessage = React.memo(({ msg, index, isPrivacyMode, T, onCopy, onSave }: any) => {
-  const markdownComponents: import('react-markdown').Components = useMemo(() => ({
-    h1: ({ children }) => (
-      <h1
-        style={{
-          color: T.text,
-          fontWeight: 700,
-          fontSize: 16,
-          marginBottom: 8
-        }}
-      >
-        {children}
-      </h1>
-    ),
-    h2: ({ children }) => (
-      <h2
-        style={{
-          color: T.text,
-          fontWeight: 600,
-          fontSize: 14,
-          marginBottom: 6
-        }}
-      >
-        {children}
-      </h2>
-    ),
-    h3: ({ children }) => (
-      <h3
-        style={{
-          color: T.text,
-          fontWeight: 600,
-          fontSize: 13,
-          marginBottom: 4
-        }}
-      >
-        {children}
-      </h3>
-    ),
-    p: ({ children }) => <p style={{ marginBottom: 8, lineHeight: 1.6 }}>{children}</p>,
-    ul: ({ children }) => (
-      <ul
-        style={{
-          paddingLeft: 16,
-          marginBottom: 8,
-          listStyle: 'disc'
-        }}
-      >
-        {children}
-      </ul>
-    ),
-    ol: ({ children }) => (
-      <ol
-        style={{
-          paddingLeft: 16,
-          marginBottom: 8,
-          listStyle: 'decimal'
-        }}
-      >
-        {children}
-      </ol>
-    ),
-    li: ({ children }) => (
-      <li style={{ marginBottom: 3, lineHeight: 1.5 }}>{children}</li>
-    ),
-    strong: ({ children }) => (
-      <strong style={{ color: T.text, fontWeight: 600 }}>{children}</strong>
-    ),
-    a: ({ href, children }) => (
-      <a
-        href={href}
-        style={{
-          color: T.accent,
-          textDecoration: 'underline',
-          textUnderlineOffset: 2
-        }}
-      >
-        {children}
-      </a>
-    ),
-    code({ node, inline, className, children, ...props }: any) {
-      const match = /language-(\w+)/.exec(className || '')
-      const codeText = String(children).replace(/\n$/, '')
-      return !inline && match ? (
+        <button
+          onClick={() => onDelete(note.id)}
+          className="absolute top-3 right-3 p-1.5 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity hover:bg-red-500/10 text-red-500"
+        >
+          <Trash2 className="w-4 h-4" />
+        </button>
+        <h3 className="font-semibold mb-2 pr-8" style={{ color: T.text, fontSize: 15 }}>
+          {note.title || 'Untitled'}
+        </h3>
         <div
-          className="relative group/code my-3 shadow-sm"
+          className="text-sm opacity-80"
+          style={{ color: T.textDim, fontSize: 11, marginBottom: 12 }}
+        >
+          {new Date(note.timestamp || Date.now()).toLocaleString()}
+        </div>
+
+        <div
+          className="max-h-40 overflow-y-auto no-scrollbar rounded-lg p-3 text-sm"
           style={{
-            borderRadius: 10,
-            overflow: 'hidden',
-            border: `1px solid ${T.border}`
+            background: T.bg,
+            border: `1px solid ${T.borderMuted}`,
+            color: T.text
           }}
         >
-          <SyntaxHighlighter
-            {...props}
-            style={vs}
-            language={match[1]}
-            PreTag="div"
-            customStyle={{
-              margin: 0,
-              fontSize: 12,
-              fontFamily: '"DM Mono", monospace',
-              background: T.surface
-            }}
-          >
-            {codeText}
-          </SyntaxHighlighter>
-          <button
-            onClick={() => onCopy(codeText)}
-            className="absolute top-2 right-2 opacity-0 group-hover/code:opacity-100 transition-opacity"
-            style={{
-              background: 'rgba(0,0,0,0.05)',
-              border: '1px solid rgba(0,0,0,0.1)',
-              borderRadius: 6,
-              padding: '4px 6px'
-            }}
-          >
-            <Copy className="w-3 h-3 text-gray-500" />
-          </button>
+          <ReactMarkdown components={workspaceNoteMarkdownComponents}>
+            {note.content || ' '}
+          </ReactMarkdown>
         </div>
-      ) : (
-        <code
+      </motion.div>
+    )
+  }
+)
+
+const ChatMessage = React.memo(({ msg, index, isPrivacyMode, T, onCopy, onSave }: any) => {
+  const markdownComponents: import('react-markdown').Components = useMemo(
+    () => ({
+      h1: ({ children }) => (
+        <h1
           style={{
-            background: T.accentDim,
-            color: T.accent,
-            padding: '1px 6px',
-            borderRadius: 4,
-            fontFamily: '"DM Mono", monospace',
-            fontSize: 12
+            color: T.text,
+            fontWeight: 700,
+            fontSize: 16,
+            marginBottom: 8
           }}
         >
           {children}
-        </code>
-      )
-    }
-  }), [T, onCopy])
+        </h1>
+      ),
+      h2: ({ children }) => (
+        <h2
+          style={{
+            color: T.text,
+            fontWeight: 600,
+            fontSize: 14,
+            marginBottom: 6
+          }}
+        >
+          {children}
+        </h2>
+      ),
+      h3: ({ children }) => (
+        <h3
+          style={{
+            color: T.text,
+            fontWeight: 600,
+            fontSize: 13,
+            marginBottom: 4
+          }}
+        >
+          {children}
+        </h3>
+      ),
+      p: ({ children }) => <p style={{ marginBottom: 8, lineHeight: 1.6 }}>{children}</p>,
+      ul: ({ children }) => (
+        <ul
+          style={{
+            paddingLeft: 16,
+            marginBottom: 8,
+            listStyle: 'disc'
+          }}
+        >
+          {children}
+        </ul>
+      ),
+      ol: ({ children }) => (
+        <ol
+          style={{
+            paddingLeft: 16,
+            marginBottom: 8,
+            listStyle: 'decimal'
+          }}
+        >
+          {children}
+        </ol>
+      ),
+      li: ({ children }) => <li style={{ marginBottom: 3, lineHeight: 1.5 }}>{children}</li>,
+      strong: ({ children }) => (
+        <strong style={{ color: T.text, fontWeight: 600 }}>{children}</strong>
+      ),
+      a: ({ href, children }) => (
+        <a
+          href={href}
+          style={{
+            color: T.accent,
+            textDecoration: 'underline',
+            textUnderlineOffset: 2
+          }}
+        >
+          {children}
+        </a>
+      ),
+      code({ node, inline, className, children, ...props }: any) {
+        const match = /language-(\w+)/.exec(className || '')
+        const codeText = String(children).replace(/\n$/, '')
+        return !inline && match ? (
+          <div
+            className="relative group/code my-3 shadow-sm"
+            style={{
+              borderRadius: 10,
+              overflow: 'hidden',
+              border: `1px solid ${T.border}`
+            }}
+          >
+            <SyntaxHighlighter
+              {...props}
+              style={vs}
+              language={match[1]}
+              PreTag="div"
+              customStyle={{
+                margin: 0,
+                fontSize: 12,
+                fontFamily: '"DM Mono", monospace',
+                background: T.surface
+              }}
+            >
+              {codeText}
+            </SyntaxHighlighter>
+            <button
+              onClick={() => onCopy(codeText)}
+              className="absolute top-2 right-2 opacity-0 group-hover/code:opacity-100 transition-opacity"
+              style={{
+                background: 'rgba(0,0,0,0.05)',
+                border: '1px solid rgba(0,0,0,0.1)',
+                borderRadius: 6,
+                padding: '4px 6px'
+              }}
+            >
+              <Copy className="w-3 h-3 text-gray-500" />
+            </button>
+          </div>
+        ) : (
+          <code
+            style={{
+              background: T.accentDim,
+              color: T.accent,
+              padding: '1px 6px',
+              borderRadius: 4,
+              fontFamily: '"DM Mono", monospace',
+              fontSize: 12
+            }}
+          >
+            {children}
+          </code>
+        )
+      }
+    }),
+    [T, onCopy]
+  )
 
   return (
     <motion.div
@@ -313,9 +316,7 @@ const ChatMessage = React.memo(({ msg, index, isPrivacyMode, T, onCopy, onSave }
           <TypingIndicator color={isPrivacyMode ? '#f59e0b' : '#3b82f6'} />
         ) : (
           <div style={{ fontSize: 13 }}>
-            <ReactMarkdown components={markdownComponents}>
-              {msg.content || ' '}
-            </ReactMarkdown>
+            <ReactMarkdown components={markdownComponents}>{msg.content || ' '}</ReactMarkdown>
 
             {msg.content && (
               <div
@@ -409,14 +410,17 @@ export default function App(): ReactElement {
 
   // ⚡ Bolt Optimization: Wrapped handleDeleteNote in useCallback to maintain a stable
   // reference, preventing unnecessary re-renders of memoized WorkspaceNote components.
-  const handleDeleteNote = useCallback((id: string) => {
-    if (setNotes) {
-      setNotes((p) => {
-        const arr = Array.isArray(p) ? p : []
-        return arr.filter((n) => n.id !== id)
-      })
-    }
-  }, [setNotes])
+  const handleDeleteNote = useCallback(
+    (id: string) => {
+      if (setNotes) {
+        setNotes((p) => {
+          const arr = Array.isArray(p) ? p : []
+          return arr.filter((n) => n.id !== id)
+        })
+      }
+    },
+    [setNotes]
+  )
 
   const { cloudStatus } = useCloudSync(
     user,
@@ -1500,12 +1504,7 @@ export default function App(): ReactElement {
 
                   <div className="space-y-3">
                     {safeNotes.map((note) => (
-                      <WorkspaceNote
-                        key={note.id}
-                        note={note}
-                        T={T}
-                        onDelete={handleDeleteNote}
-                      />
+                      <WorkspaceNote key={note.id} note={note} T={T} onDelete={handleDeleteNote} />
                     ))}
                   </div>
                 </div>
