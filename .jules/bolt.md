@@ -22,3 +22,6 @@
 ## 2026-08-28 - Fast API async def blocking I/O
 **Learning:** Defining endpoints that perform synchronous, blocking operations (e.g., PyPDF2 parsing, ChromaDB insertions, DDGS network requests) with `async def` completely blocks the FastAPI asyncio event loop, causing severe latency and preventing concurrency.
 **Action:** Always define endpoints performing heavy synchronous I/O or CPU bounds using standard `def`. FastAPI will automatically offload these to an external threadpool. Additionally, ensure `UploadFile` is read synchronously via `file.file.read()` instead of `await file.read()`.
+## 2026-08-29 - Unstable useCallback dependencies defeating React.memo
+**Learning:** In the React application, frequently changing state variables (like `inputUrl` linked to a text input) included in a `useCallback` dependency array cause the callback reference to change on every render (e.g. on every keystroke). If this callback is passed down to heavy child components wrapped in `React.memo()`, the unstable prop will defeat memoization and cause severe O(N) re-renders.
+**Action:** When a callback needs access to frequently changing state but shouldn't trigger child re-renders, track the changing state using a `useRef` (updated via `useEffect`) and read from the ref inside the callback instead of including the state in the dependency array.
