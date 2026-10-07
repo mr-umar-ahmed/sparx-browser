@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 
 export interface Tab {
   id: string
@@ -50,6 +50,15 @@ export function useBrowser() {
   )
   const [inputUrl, setInputUrl] = useState<string>('')
   const [isUrlFocused, setIsUrlFocused] = useState(false)
+
+  // ⚡ Bolt Optimization: Using useRef to track the rapidly changing inputUrl state.
+  // This decouples the state from the useCallback dependencies of handleNavigate,
+  // preventing handleNavigate from being recreated on every keystroke, which in turn
+  // prevents unnecessary O(N) re-renders of the memoizedTabs useMemo in App.tsx.
+  const inputUrlRef = useRef(inputUrl)
+  useEffect(() => {
+    inputUrlRef.current = inputUrl
+  }, [inputUrl])
 
   const [canGoBack, setCanGoBack] = useState(false)
   const [canGoForward, setCanGoForward] = useState(false)
@@ -140,7 +149,7 @@ export function useBrowser() {
 
   const handleNavigate = useCallback(
     (newUrl?: string) => {
-      let url = (newUrl || inputUrl).trim()
+      let url = (newUrl || inputUrlRef.current).trim()
       if (!url) return
 
       // Ignore internal protocol for search parsing
@@ -174,7 +183,7 @@ export function useBrowser() {
       )
       setInputUrl(url === 'sparx://newtab' ? '' : url)
     },
-    [inputUrl, activeTabId, isPrivacyMode]
+    [activeTabId, isPrivacyMode]
   )
 
   const addBookmark = useCallback(() => {
