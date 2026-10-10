@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 
 export interface Tab {
   id: string
@@ -49,6 +49,11 @@ export function useBrowser() {
     () => localStorage.getItem('sparx_activeTab') || '1'
   )
   const [inputUrl, setInputUrl] = useState<string>('')
+  const inputUrlRef = useRef(inputUrl)
+  useEffect(() => {
+    inputUrlRef.current = inputUrl
+  }, [inputUrl])
+
   const [isUrlFocused, setIsUrlFocused] = useState(false)
 
   const [canGoBack, setCanGoBack] = useState(false)
@@ -140,7 +145,11 @@ export function useBrowser() {
 
   const handleNavigate = useCallback(
     (newUrl?: string) => {
-      let url = (newUrl || inputUrl).trim()
+      // ⚡ Bolt Optimization: Use inputUrlRef instead of inputUrl state
+      // to avoid creating a new function reference on every keystroke.
+      // Unstable callback references passed to memoized components (like ScrollMorphHero)
+      // break React.memo() and cause expensive re-renders.
+      let url = (newUrl || inputUrlRef.current).trim()
       if (!url) return
 
       // Ignore internal protocol for search parsing
@@ -174,7 +183,7 @@ export function useBrowser() {
       )
       setInputUrl(url === 'sparx://newtab' ? '' : url)
     },
-    [inputUrl, activeTabId, isPrivacyMode]
+    [activeTabId, isPrivacyMode]
   )
 
   const addBookmark = useCallback(() => {
