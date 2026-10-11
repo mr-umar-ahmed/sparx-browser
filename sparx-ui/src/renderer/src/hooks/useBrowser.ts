@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 
 export interface Tab {
   id: string
@@ -138,9 +138,15 @@ export function useBrowser() {
     setTabs((p) => p.map((t) => (t.id === id ? { ...t, pinned: !t.pinned } : t)))
   }, [])
 
+  // ⚡ Bolt Optimization: Track inputUrl in a ref to avoid unstable handleNavigate references
+  const inputUrlRef = useRef(inputUrl)
+  useEffect(() => {
+    inputUrlRef.current = inputUrl
+  }, [inputUrl])
+
   const handleNavigate = useCallback(
     (newUrl?: string) => {
-      let url = (newUrl || inputUrl).trim()
+      let url = (newUrl || inputUrlRef.current).trim()
       if (!url) return
 
       // Ignore internal protocol for search parsing
@@ -174,7 +180,7 @@ export function useBrowser() {
       )
       setInputUrl(url === 'sparx://newtab' ? '' : url)
     },
-    [inputUrl, activeTabId, isPrivacyMode]
+    [activeTabId, isPrivacyMode]
   )
 
   const addBookmark = useCallback(() => {
